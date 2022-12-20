@@ -22,6 +22,10 @@ public class RegistrationService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("ROLE_USER");
         user.setAvatar("https://via.placeholder.com/100");
+        user.setStatus("Я новый пользователь!");
+        user.setLocation("");
+        user.setUniversity("");
+        user.setJob("");
         usersRepository.save(user);
     }
 

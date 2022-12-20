@@ -1,13 +1,32 @@
 package com.absattarov.SocialNetwork.services;
 
+import com.absattarov.SocialNetwork.models.User;
 import com.absattarov.SocialNetwork.repositories.UsersRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class UserService {
     private final UsersRepository usersRepository;
 
     public UserService(UsersRepository usersRepository) {
         this.usersRepository = usersRepository;
     }
+
+    public Optional<User> findByPhoneNumber(String number){
+        return usersRepository.findByPhoneNumber(number);
+    }
+
+    public Optional<User> findById(int id){
+        return usersRepository.findById(id);
+    }
+    @Transactional
+    public void update(User user){
+        usersRepository.save(user);
+    }
+
+
 }

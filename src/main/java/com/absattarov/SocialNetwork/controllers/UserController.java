@@ -5,6 +5,8 @@ import com.absattarov.SocialNetwork.models.GroupPost;
 import com.absattarov.SocialNetwork.models.Post;
 import com.absattarov.SocialNetwork.models.User;
 import com.absattarov.SocialNetwork.security.UserDetails;
+import com.absattarov.SocialNetwork.services.PostService;
+import com.absattarov.SocialNetwork.services.UserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,13 +23,23 @@ import java.util.List;
 @RequestMapping("/")
 public class UserController {
 
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    public User getCurrentUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userService.findByPhoneNumber(userDetails.getUser().getPhoneNumber()).get();
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_MODER','ROLE_ADMIN')")
     @GetMapping("/")
     @Transactional(readOnly = true)
     public String newsPage(Model model){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User currentUser = userDetails.getUser();
+        User currentUser = getCurrentUser();
         List<GroupPost> groupPosts = new ArrayList<>();
         List<Post> posts = new ArrayList<>();
         List<Group> groups =  currentUser.getSubscriptionGroup();
@@ -48,10 +60,7 @@ public class UserController {
 
         return "/user/news";
     }
-    @GetMapping("/profile")
-    public String toProfile(){
-        return "/user/profile";
-    }
+
     @GetMapping("/messages")
     public String toMessages(){
         return "/user/messages";
@@ -61,7 +70,7 @@ public class UserController {
         return "/user/groups";
     }
     @GetMapping("/friends")
-    public String tofriends(){
+    public String toFriends(){
         return "/user/friends";
     }
 

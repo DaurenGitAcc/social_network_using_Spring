@@ -1,5 +1,8 @@
 package com.absattarov.SocialNetwork.models;
 
+import org.hibernate.annotations.Cascade;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,6 +26,7 @@ public class User {
     private String password;
     @Column(name = "avatar")
     private String avatar;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_date")
     private LocalDate birthDate;
     @Column(name = "location")
@@ -44,7 +48,7 @@ public class User {
         joinColumns = @JoinColumn(name = "user"),
         inverseJoinColumns = @JoinColumn(name = "friend"))
     private List<User> friends;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "subscriber",
             joinColumns = @JoinColumn(name = "user"),

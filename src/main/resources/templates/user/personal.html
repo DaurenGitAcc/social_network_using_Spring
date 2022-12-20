@@ -21,7 +21,7 @@
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="#">Profile</a></li>
                     <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                    <li><a class="dropdown-item" href="#">Logout</a></li>
                 </ul>
             </div>
         </div>
@@ -61,10 +61,7 @@
                         <div class="col text-start ms-3">
                             <div class="d-flex justify-content-between">
                                 <p class="fs-3 d-inline-flex" th:text="${currentUser.getName()+' '+currentUser.getSurname()}">Name Surname</p>
-                                <button type="button" class="btn btn-outline-light mb-2"  data-bs-toggle="modal" data-bs-target="#editPersonalInfoModal">
-                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdn5F76ZwDrFLccInphTTfJCjfZLTMxEpfw&usqp=CAU" class="rounded-circle" style="max-width: 38px;" alt="Cinque Terre">
-                                    <!--                                        <p class="d-inline-flex fw-semibold">Изменить</p>-->
-                                </button>
+                                <a class="btn btn-primary" href="#" style="height: 40px" role="button">Подписаться</a>
                             </div>
                             <p class="fs-6" th:if="${!currentUser.getStatus().isEmpty()}" th:text="${'Статус: '+currentUser.getStatus()}">Статус: Занят 💻</p>
                             <p class="fs-6" th:if="${!currentUser.getLocation().isEmpty()}" th:text="${'Город: '+currentUser.getLocation()}">Город: Актау</p>
@@ -73,7 +70,6 @@
                             <p class="fs-6" th:if="${!currentUser.getJob().isEmpty()}" th:text="${'Работа: '+currentUser.getJob()}">Работа: Geegle</p>
                             <div class="overflow-auto h-auto" style="width: 90%;background-color: #f3f3f3;overflow: auto;
                                                                              white-space: nowrap;">
-
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
                                     <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
@@ -92,7 +88,6 @@
 
                 </div>
                 <hr>
-                <button type="button" class="btn btn-light fw-semibold my-3"  data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
 
 
 
@@ -119,7 +114,6 @@
                                         </ul>
                                     </div>
                                 </div>
-
 
                                 <script>
 
@@ -167,12 +161,27 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
-                <div th:each="friend:${friends}" class="row p-2 mx-auto">
-                    <a th:href="@{/user/{id}(id=${friend.getId()})}" class="text-decoration-none text-dark">
+                <div class="row p-2 mx-auto">
+                    <a href="#" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
-                            <img th:src="@{${friend.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
-                            <p class="fs-6 fw-semibold my-2" th:text="${friend.getName()+' '+friend.getSurname()}">Name Surname</p>
+                            <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle me-3" alt="...">
+                            <p class="fs-6 fw-semibold my-2">Dauren Absattarov</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="row p-2 mx-auto">
+                    <a href="#" class="text-decoration-none text-dark">
+                        <div class="d-inline-flex">
+                            <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle me-3" alt="...">
+                            <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="row p-2 mx-auto">
+                    <a href="#" class="text-decoration-none text-dark">
+                        <div class="d-inline-flex">
+                            <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle me-3" alt="...">
+                            <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
                         </div>
                     </a>
                 </div>
@@ -192,16 +201,94 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
-                <div th:each="subscriber:${subscribers}" class="row p-2 mx-auto">
-                    <a th:href="@{/user/{id}(id=${subscriber.getId()})}" class="text-decoration-none text-dark">
-                        <div class="d-inline-flex">
-                            <img th:src="@{${subscriber.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
-                            <p class="fs-6 fw-semibold my-2" th:text="${subscriber.getName()+' '+subscriber.getSurname()}">Name Surname</p>
-                        </div>
-                    </a>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
                 </div>
-
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -218,91 +305,100 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
-                <div th:each="group:${groups}" class="row p-2 mx-auto">
-                    <a th:href="@{/group/{id}(id=${group.getId()})}" class="text-decoration-none text-dark">
-                        <div class="d-inline-flex">
-                            <img th:src="@{${group.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
-                            <p class="fs-6 fw-semibold my-2" th:text="${group.getName()}">Group name</p>
-                        </div>
-                    </a>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
                 </div>
-
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
+                <div class="row p-2 mx-auto mt-1">
+                    <div class="col-2 me-3">
+                        <img src="https://via.placeholder.com/200" height="45px" class="rounded-circle" alt="...">
+                    </div>
+                    <div class="col">
+                        <p class="fs-6 fw-semibold my-2">Гулназ Абдижапарова</p>
+                    </div>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
 <!--subscription list Modal end-->
-
-<!--   Add Post Modal-->
-<div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="addPostModalLabel">Добавить Пост</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="addPost" th:method="POST" th:action="@{/profile/post}">
-
-                    <div class="mb-3">
-                        <textarea class="form-control" name="post" id="post" style="min-height: 75px;"></textarea>
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="submit" class="btn btn-primary" form="addPost">Создать</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--Add Post Modal end-->
-
-
-<!--   Edit personal info Modal-->
-<div class="modal fade" id="editPersonalInfoModal" tabindex="-1" aria-labelledby="editPersonalInfoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editPersonalInfoModalLabel">Информацию о пользователе</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="infoForm" th:method="POST" th:action="@{/profile/personalInfo}" th:object="${currentUser}">
-                    <div class="mb-3">
-                        <div class="mb-3">
-                            <label for="status" class="col-form-label">Статус:</label>
-                            <textarea class="form-control" id="status" th:field="*{status}"></textarea>
-                        </div>
-                        <label for="location" class="col-form-label">Город:</label>
-                        <input type="text" class="form-control" id="location" th:field="*{location}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="birthDate" class="col-form-label">День рождения:</label>
-                        <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="university" class="col-form-label">Образование:</label>
-                        <input type="text" class="form-control" id="university" th:field="*{university}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="job" class="col-form-label">Место работы:</label>
-                        <input type="text" class="form-control" id="job" th:field="*{job}">
-                    </div>
-
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="submit" class="btn btn-primary" form="infoForm">Сохранить</button>
-            </div>
-        </div>
-    </div>
-</div>
-<!--Edit personla info Modal end-->
 
 <!--   Photo Modal-->
 <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">

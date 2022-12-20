@@ -1,5 +1,9 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.Cascade;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +36,10 @@ public class Post {
         this.createdAt = createdAt;
         this.post = post;
         this.rating = rating;
+    }
+
+    public String getJson() throws JsonProcessingException {
+        return new ObjectMapper().writeValueAsString(this);
     }
 
     public int getId() {

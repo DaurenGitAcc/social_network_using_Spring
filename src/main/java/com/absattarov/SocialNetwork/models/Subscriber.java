@@ -10,9 +10,7 @@ public class Subscriber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "user",referencedColumnName = "id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "subscriber",referencedColumnName = "id")
     private User subscriber;
 }

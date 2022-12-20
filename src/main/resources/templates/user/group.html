@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Personal Page</title>
+    <title>Group Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
 </head>
@@ -32,17 +32,18 @@
     <div class="row justify-content-between">
         <div class="col-2">
             <div class="list-group text-start">
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary">My Profile</button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toPersonalPage">My Profile</button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toNewsPage">News Page</button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toMessagesPage">Messages</button>
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toGroupsPage">Groups</button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary" form="toGroupsPage">Groups</button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toFriendsPage">Friends</button>
                 <button type="button" class="list-group-item list-group-item-action fw-semibold">Games</button>
+                <form id="toPersonalPage" th:action="@{/profile}" method="get"></form>
                 <form id="toNewsPage" th:action="@{/}" method="get"></form>
-                <form id="toMessagesPage" th:action="@{/messages}" method="get"></form>
-                <form id="toGroupsPage" th:action="@{/groups}" method="get"></form>
-                <form id="toFriendsPage" th:action="@{friends}" method="get"></form>
-                <form id="toGamesPage" th:action="@{/}" method="get"></form>
+                <form id="toMessagesPage" action="messages.html" method="get"></form>
+                <form id="toGroupsPage" action="groups.html" method="get"></form>
+                <form id="toFriendsPage" action="friends.html" method="get"></form>
+                <form id="toGamesPage" action="news.html" method="get"></form>
             </div>
         </div>
         <div class="col-9 ms-5 mx-auto">
@@ -51,51 +52,54 @@
                     <div class="row justify-content-between">
                         <div class="col-5">
                             <button type="button" class="btn rounded-circle" style="height: auto" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                <img th:src="@{${currentUser.getAvatar()}}" height="200px" class="rounded-circle me-2" alt="..."></button>
-                            <div class="text-center my-4">
-                                <button type="button" class="btn btn-light fw-semibold me-1" data-bs-toggle="modal" data-bs-target="#friendsListModal"><p class="fs-6 m-0" th:text="${friends.size()}">7</p>друзей</button>
-                                <button type="button" class="btn btn-light fw-semibold me-1" data-bs-toggle="modal" data-bs-target="#subscribersListModal"><p class="fs-6 m-0" th:text="${subscribers.size()}">7</p>подписчиков</button>
-                                <button type="button" class="btn btn-light fw-semibold" data-bs-toggle="modal" data-bs-target="#subscriptionListModal"><p class="fs-6 m-0" th:text="${groups.size()+friends.size()}">7</p>подписок</button>
+                                <img th:src="@{${group.getAvatar()}}" height="200px" class="rounded-circle me-2" alt="...">
+                            </button>
+                            <div class="text-center my-3">
+                                <button type="button" class="btn btn-light fw-semibold me-1" data-bs-toggle="modal" data-bs-target="#subscribersListModal"><p class="fs-6 m-0" th:text="${subscribers.size()}">3</p>подписчиков</button>
+                                <button type="button" class="btn btn-light fw-semibold" data-bs-toggle="modal" data-bs-target="#moderatorsListModal"><p class="fs-6 m-0" th:text="${contacts.size()}">1</p>модератора</button>
                             </div>
                         </div>
-                        <div class="col text-start ms-3">
+                        <div class="col text-start">
                             <div class="d-flex justify-content-between">
-                                <p class="fs-3 d-inline-flex" th:text="${currentUser.getName()+' '+currentUser.getSurname()}">Name Surname</p>
-                                <button type="button" class="btn btn-outline-light mb-2"  data-bs-toggle="modal" data-bs-target="#editPersonalInfoModal">
+                                <p class="fs-3 d-inline-flex" th:text="${group.getName()}">Lada. Новости Актау</p>
+                                <button th:if="${group.getContacts().contains(currentUser)}" type="button" class="btn btn-outline-light mb-2"  data-bs-toggle="modal" data-bs-target="#editGroupInfoModal">
                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdn5F76ZwDrFLccInphTTfJCjfZLTMxEpfw&usqp=CAU" class="rounded-circle" style="max-width: 38px;" alt="Cinque Terre">
-                                    <!--                                        <p class="d-inline-flex fw-semibold">Изменить</p>-->
                                 </button>
+                                <a th:if="${(!group.getContacts().contains(currentUser))&&(!group.getMembers().contains(currentUser))}" class="btn btn-primary"  href="#" style="height: 40px" role="button">Подписаться</a>
                             </div>
-                            <p class="fs-6" th:if="${!currentUser.getStatus().isEmpty()}" th:text="${'Статус: '+currentUser.getStatus()}">Статус: Занят 💻</p>
-                            <p class="fs-6" th:if="${!currentUser.getLocation().isEmpty()}" th:text="${'Город: '+currentUser.getLocation()}">Город: Актау</p>
-                            <p class="fs-6" th:if="${currentUser.getBirthDate()!=null}" th:text="${'День рождения: '+currentUser.getBirthDate()}">День рождения: 9 ноября 2000</p>
-                            <p class="fs-6" th:if="${!currentUser.getUniversity().isEmpty()}" th:text="${'Образование: '+currentUser.getUniversity()}">Образование: МУИТ</p>
-                            <p class="fs-6" th:if="${!currentUser.getJob().isEmpty()}" th:text="${'Работа: '+currentUser.getJob()}">Работа: Geegle</p>
-                            <div class="overflow-auto h-auto" style="width: 90%;background-color: #f3f3f3;overflow: auto;
+                            <p class="fs-6" th:text="${'Дата создания: '+group.getCreatedAt()}">Дата создания: 9 ноября 2017</p>
+                            <p class="fs-6" th:if="${!group.getDescription().isEmpty()}" th:text="${'Описание: '+group.getDescription()}">Описание: Данное сообщество является новостным порталом города Актау</p>
+                            <div class="overflow-auto h-auto" style="background-color: #f3f3f3;overflow: auto;
                                                                              white-space: nowrap;">
-
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                                 <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
+                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="...">
+                                </button>
                             </div>
                         </div>
                     </div>
 
                 </div>
                 <hr>
-                <button type="button" class="btn btn-light fw-semibold my-3"  data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
-
-
-
+                <button type="button" class="btn btn-light fw-semibold my-3" th:if="${group.getContacts().contains(currentUser)}" data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
+                <button type="button" class="btn btn-light fw-semibold my-3" th:if="${group.getMembers().contains(currentUser)}"  data-bs-toggle="modal" data-bs-target="#sendPostModal">Предложить пост</button>
 
                 <div th:each="post:${posts}" class="card mx-auto my-3" style="width: 80%;">
                     <div class="card-body">
@@ -103,8 +107,8 @@
                         <div id="header" class="d-flex justify-content-between mb-0">
                             <a href="#" class="text-decoration-none text-dark">
                                 <div class="d-inline-flex">
-                                    <img th:src="@{${post.getAuthor().getAvatar()}}" height="40px" class="rounded-circle me-2" alt="...">
-                                    <p class="fs-6 mt-2" th:text="${post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Name Surname</p>
+                                    <img th:src="@{${post.getGroup().getAvatar()}}" height="40px" class="rounded-circle me-2" alt="...">
+                                    <p class="fs-6 mt-2" th:text="${post.getGroup().getName()}">Group Name</p>
                                 </div></a>
                             <div class="d-flex align-center">
                                 <p id="created_at" class="fs-6 mt-1" th:text="${post.getCreatedAt().getHour()+':'+post.getCreatedAt().getMinute()}">11:43</p>
@@ -158,31 +162,7 @@
     </div>
 </div>
 
-<!--   Friends list Modal-->
-<div class="modal fade" id="friendsListModal" tabindex="-1" aria-labelledby="friendsListModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="width: 360px;margin: auto;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5 ms-4" id="addPostModalLabel">Друзья</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
 
-                <div th:each="friend:${friends}" class="row p-2 mx-auto">
-                    <a th:href="@{/user/{id}(id=${friend.getId()})}" class="text-decoration-none text-dark">
-                        <div class="d-inline-flex">
-                            <img th:src="@{${friend.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
-                            <p class="fs-6 fw-semibold my-2" th:text="${friend.getName()+' '+friend.getSurname()}">Name Surname</p>
-                        </div>
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-</div>
-<!--Friends list Modal end-->
 <!--   Subscribers list Modal-->
 <div class="modal fade" id="subscribersListModal" tabindex="-1" aria-labelledby="subscribersListModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="width: 360px;margin: auto;">
@@ -192,7 +172,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
                 <div th:each="subscriber:${subscribers}" class="row p-2 mx-auto">
                     <a th:href="@{/user/{id}(id=${subscriber.getId()})}" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
@@ -209,21 +188,20 @@
 </div>
 <!--Subscribers list Modal end-->
 
-<!--   subscription list Modal-->
-<div class="modal fade" id="subscriptionListModal" tabindex="-1" aria-labelledby="subscriptionListModalLabel" aria-hidden="true">
+<!--   Moderators list Modal-->
+<div class="modal fade" id="moderatorsListModal" tabindex="-1" aria-labelledby="moderatorsListModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="width: 360px;margin: auto;">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5 ms-4" id="subscriptionListModalLabel">Подписки</h1>
+                <h1 class="modal-title fs-5 ms-4" id="moderatorsListModalLabel">Контакты</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
-                <div th:each="group:${groups}" class="row p-2 mx-auto">
-                    <a th:href="@{/group/{id}(id=${group.getId()})}" class="text-decoration-none text-dark">
+                <div th:each="contact:${contacts}" class="row p-2 mx-auto">
+                    <a th:href="@{/user/{id}(id=${contact.getId()})}" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
-                            <img th:src="@{${group.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
-                            <p class="fs-6 fw-semibold my-2" th:text="${group.getName()}">Group name</p>
+                            <img th:src="@{${contact.getAvatar()}}" height="45px" class="rounded-circle me-3" alt="...">
+                            <p class="fs-6 fw-semibold my-2" th:text="${contact.getName()+' '+contact.getSurname()}">Name Surname</p>
                         </div>
                     </a>
                 </div>
@@ -233,7 +211,7 @@
         </div>
     </div>
 </div>
-<!--subscription list Modal end-->
+<!--Moderators list Modal end-->
 
 <!--   Add Post Modal-->
 <div class="modal fade" id="addPostModal" tabindex="-1" aria-labelledby="addPostModalLabel" aria-hidden="true">
@@ -244,65 +222,81 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="addPost" th:method="POST" th:action="@{/profile/post}">
+                <form>
 
                     <div class="mb-3">
-                        <textarea class="form-control" name="post" id="post" style="min-height: 75px;"></textarea>
+                        <textarea class="form-control" id="description" style="min-height: 75px;"></textarea>
                     </div>
 
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="submit" class="btn btn-primary" form="addPost">Создать</button>
+                <button type="button" class="btn btn-primary">Создать</button>
             </div>
         </div>
     </div>
 </div>
 <!--Add Post Modal end-->
 
-
-<!--   Edit personal info Modal-->
-<div class="modal fade" id="editPersonalInfoModal" tabindex="-1" aria-labelledby="editPersonalInfoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<!-- Send post Modal-->
+<div class="modal fade" id="sendPostModal" tabindex="-1" aria-labelledby="sendPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editPersonalInfoModalLabel">Информацию о пользователе</h1>
+                <h1 class="modal-title fs-5" id="sendPostModalLabel">Отправить Пост</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="infoForm" th:method="POST" th:action="@{/profile/personalInfo}" th:object="${currentUser}">
+                <form>
+
                     <div class="mb-3">
-                        <div class="mb-3">
-                            <label for="status" class="col-form-label">Статус:</label>
-                            <textarea class="form-control" id="status" th:field="*{status}"></textarea>
-                        </div>
-                        <label for="location" class="col-form-label">Город:</label>
-                        <input type="text" class="form-control" id="location" th:field="*{location}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="birthDate" class="col-form-label">День рождения:</label>
-                        <input type="date" class="form-control" id="birthDate" th:field="*{birthDate}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="university" class="col-form-label">Образование:</label>
-                        <input type="text" class="form-control" id="university" th:field="*{university}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="job" class="col-form-label">Место работы:</label>
-                        <input type="text" class="form-control" id="job" th:field="*{job}">
+                        <textarea class="form-control" id="description" style="min-height: 75px;"></textarea>
                     </div>
 
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                <button type="submit" class="btn btn-primary" form="infoForm">Сохранить</button>
+                <button type="button" class="btn btn-primary">Отправить</button>
             </div>
         </div>
     </div>
 </div>
-<!--Edit personla info Modal end-->
+<!--Send post Modal end-->
+
+<!--   Edit group info Modal-->
+<div class="modal fade" id="editGroupInfoModal" tabindex="-1" aria-labelledby="editGroupInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editGroupInfoModalLabel">Информацию о группе</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="city" class="col-form-label">Город:</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="created_at" class="col-form-label">Дата создания:</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="col-form-label">Описание:</label>
+                        <input type="text" class="form-control" id="name">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Edit group info Modal end-->
 
 <!--   Photo Modal-->
 <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
@@ -320,27 +314,14 @@
                                                                                             transform: translateY(-50%);" alt="...">
             </div>
             <div class="modal-footer">
-                <div class="container my-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <button type="button" class="btn btn-light btn-sm fs-6">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
-                                Like <p class="m-0 d-inline-flex">777</p>
-                            </button>
-                            <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
-                                Comments
-                            </button>
-                        </div>
-
-                        <div class="d-inline-flex text-end">
-                            <button class="btn btn-light fs-5 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                ⋮
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Удалить</a></li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="container text-start">
+                    <button type="button" class="btn btn-light btn-sm fs-6">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
+                        Like <p class="m-0 d-inline-flex">777</p>
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
+                        Comments
+                    </button>
                 </div>
 
                 <div class="container m-0 p-0">
@@ -395,7 +376,7 @@
                     <a href="#" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
                             <img src="https://via.placeholder.com/200" height="44px" class="rounded-circle me-2" alt="...">
-                            <p class="fs-6 mt-2">Dauren Absattarov</p>
+                            <p class="fs-6 mt-2">Lada. Новости Актау</p>
                         </div>
                     </a>
                 </h1>
@@ -423,7 +404,7 @@
                         <div class="col-9">
                             <div class="card">
                                 <div class="card-body d-flex">
-                                    <input class="form-control me-2" type="text">
+                                    <input class="form-control me-2" type="text" placeholder="Комментарии">
                                     <button class="btn btn-outline-primary" type="submit">Написать</button>
 
                                 </div>
@@ -437,42 +418,12 @@
                             <p class="fs-5 text-start">1 комментарии:</p>
                             <div class="card mt-2">
                                 <div class="card-body">
-                                    <div id="comment_header" class="d-flex justify-content-between">
+                                    <div class="d-flex justify-content-between">
                                         <div class="d-inline-flex">
                                             <img src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
                                             <p class="fs-6 mt-1">Dauren Absattarov</p>
                                         </div>
-                                        <p id="comment_created_at" class="fs-6">11:43</p>
-
-                                        <div id="dropdown_settings" class="dropup-center dropup" style="display: none">
-                                            <button class="btn btn-light fs-6 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                ⋮
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-lg-end">
-                                                <li><button class="dropdown-item" type="button">Редактировать</button></li>
-                                                <li><button class="dropdown-item" type="button">Удалить</button></li>
-                                            </ul>
-                                        </div>
-
-                                        <script>
-
-                                            document.getElementById("comment_header").addEventListener("mouseover", mouseOver2);
-                                            document.getElementById("comment_header").addEventListener("mouseout", mouseOut2);
-
-                                            function mouseOver2() {
-                                                document.getElementById("comment_created_at").style.display = "none";
-                                                document.getElementById("dropdown_settings").style.display = "inline";
-                                            }
-
-                                            function mouseOut2() {
-                                                document.getElementById("dropdown_settings").style.display = "none";
-                                                document.getElementById("comment_created_at").style.display = "inline";
-                                            }
-
-                                        </script>
-
-
-
+                                        <p class="fs-6">11:43</p>
                                     </div>
                                     <p class="card-text text-start" style="width: 90%;
                                                                                    hyphens: auto">Очень хороши пост.</p>
@@ -487,6 +438,11 @@
     </div>
 </div>
 <!--Post Modal end-->
+
+
+
+
+
 
 
 </body>
