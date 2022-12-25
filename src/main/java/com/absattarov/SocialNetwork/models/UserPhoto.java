@@ -18,7 +18,7 @@ public class UserPhoto {
     @Column(name = "rating")
     private int rating;
     @ManyToOne
-    @JoinColumn(name = "user",referencedColumnName = "id")
+    @JoinColumn(name = "user_of",referencedColumnName = "id")
     private User user;
     @OneToMany(mappedBy = "userPhoto")
     private List<UserPhotoComment> userPhotoComments;

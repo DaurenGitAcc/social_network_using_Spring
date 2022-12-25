@@ -73,19 +73,12 @@
                             <p class="fs-6" th:if="${!currentUser.getJob().isEmpty()}" th:text="${'Работа: '+currentUser.getJob()}">Работа: Geegle</p>
                             <div class="overflow-auto h-auto" style="width: 90%;background-color: #f3f3f3;overflow: auto;
                                                                              white-space: nowrap;">
+                                <button type="button" class="btn m-0 p-0" style="" onclick="imageInput()">
+                                    <img src="/./img/plus_edited.png" class="img-fluid d-inline-flex" style="width: 4.5rem;" alt="..."></button>
 
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
-                                <button type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
-                                    <img src="https://via.placeholder.com/200" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+                                <button th:each="photo:${photos}" type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                    <img th:src="@{${photo.photoPath}}" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
+
                             </div>
                         </div>
                     </div>
@@ -93,7 +86,11 @@
                 </div>
                 <hr>
                 <button type="button" class="btn btn-light fw-semibold my-3"  data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
-
+                <form id="form-upload" th:method="POST" th:action="@{/profile/upload}" enctype="multipart/form-data" style="display: none">
+                    <div class="form-group">
+                        <input id="input-upload" type="file" name="image" accept="image/*" class="form-control-file">
+                    </div>
+                </form>
 
 
 
@@ -145,8 +142,15 @@
 </div>
 <script th:inline="javascript">
 
-    // document.getElementById("time-edit").addEventListener("mouseover", mouseOver);
-    // document.getElementById("time-edit").addEventListener("mouseout", mouseOut);
+    function imageInput() {
+        document.getElementById("input-upload").click();
+    }
+
+    document.getElementById("input-upload").onchange = function() {
+        document.getElementById("form-upload").submit();
+    };
+
+
 
     function mouseOver(divv,bool) {
         if(typeof (bool)==="number"){

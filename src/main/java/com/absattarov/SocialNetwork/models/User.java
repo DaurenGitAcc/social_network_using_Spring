@@ -257,4 +257,9 @@ public class User {
     public void setGroupsModer(List<Group> groupsModer) {
         this.groupsModer = groupsModer;
     }
+
+    @Override
+    public int hashCode() {
+        return this.id;
+    }
 }
