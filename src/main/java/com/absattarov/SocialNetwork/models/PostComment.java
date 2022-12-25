@@ -1,5 +1,9 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,6 +20,7 @@ public class PostComment {
     private String comment;
     @ManyToOne
     @JoinColumn(name = "post",referencedColumnName = "id")
+    @JsonIgnore
     private Post post;
     @ManyToOne
     @JoinColumn(name = "author",referencedColumnName = "id")
@@ -28,6 +33,12 @@ public class PostComment {
         this.id = id;
         this.createdAt = createdAt;
         this.comment = comment;
+    }
+
+    public String getJson() throws JsonProcessingException {
+
+
+        return new ObjectMapper().writeValueAsString(this);
     }
 
     public int getId() {

@@ -1,5 +1,7 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.Cascade;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -23,6 +25,7 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "password")
+    @JsonIgnore
     private String password;
     @Column(name = "avatar")
     private String avatar;
@@ -40,31 +43,39 @@ public class User {
     @Column(name = "status")
     private String status;
     @Column(name = "role")
+    @JsonIgnore
     private String role;
 ///
-    @ManyToMany(fetch = FetchType.EAGER)
+
+    @ManyToMany
     @JoinTable(
         name = "friends",
         joinColumns = @JoinColumn(name = "user"),
         inverseJoinColumns = @JoinColumn(name = "friend"))
+    @JsonIgnore
     private List<User> friends;
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "subscriber",
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "subscriber"))
+    @JsonIgnore
     private List<User> subscribers;
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<UserPhoto> userPhotos;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "author")
+    @JsonIgnore
     private List<Post> posts;
 
     ///////////
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "members")
+    @ManyToMany(mappedBy = "members")
+    @JsonIgnore
     private List<Group> subscriptionGroup;
 
-    @ManyToMany(fetch = FetchType.EAGER,mappedBy = "contacts")
+    @ManyToMany(mappedBy = "contacts")
+    @JsonIgnore
     private List<Group> groupsModer;
 
     public User() {

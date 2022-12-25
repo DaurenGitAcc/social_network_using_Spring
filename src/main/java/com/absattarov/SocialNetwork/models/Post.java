@@ -1,10 +1,16 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +31,7 @@ public class Post {
     @JoinColumn(name = "author",referencedColumnName = "id")
     private User author;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "post")
     private List<PostComment> postComments;
 
     public Post() {
@@ -38,8 +44,22 @@ public class Post {
         this.rating = rating;
     }
 
-    public String getJson() throws JsonProcessingException {
-        return new ObjectMapper().writeValueAsString(this);
+    public String getJsonn() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+//
+//        objectMapper.setDateFormat(df);
+        return mapper.writeValueAsString(this);
     }
 
     public int getId() {

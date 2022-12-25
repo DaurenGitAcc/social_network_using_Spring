@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -106,8 +106,8 @@
                                     <img th:src="@{${post.getAuthor().getAvatar()}}" height="40px" class="rounded-circle me-2" alt="...">
                                     <p class="fs-6 mt-2" th:text="${post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Name Surname</p>
                                 </div></a>
-                            <div class="d-flex align-center">
-                                <p id="created_at" class="fs-6 mt-1" th:text="${post.getCreatedAt().getHour()+':'+post.getCreatedAt().getMinute()}">11:43</p>
+                            <div th:onmouseover="mouseOver(this,[[${currentUser.getId()==post.getAuthor().getId()}]])" th:onmouseout="mouseOut(this,[[${currentUser.getId()==post.getAuthor().getId()}]])" class="d-flex align-center">
+                                <p id="created_at" class="fs-6 mt-1" th:text="${post.getCreatedAt().getHour()+(post.getCreatedAt().getMinute()<10?':0':':')+ post.getCreatedAt().getMinute()}">11:43</p>
                                 <div class="d-inline-flex text-end">
 
                                     <div id="settings" class="dropdown" style="display: none">
@@ -115,40 +115,26 @@
                                             ⋮
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><button class="dropdown-item" type="button">Удалить</button></li>
+                                            <li><button class="dropdown-item" type="button"  data-bs-toggle="modal" data-bs-target="#editPostByAuthorModal" th:data-bs-whatever="${post.getJsonn()}">Редактировать</button></li>
+                                            <li><button class="dropdown-item" th:form="${'deletePost'+post.getId()}" type="submit">Удалить</button></li>
+                                            <form th:id="${'deletePost'+post.getId()}" th:method="POST" th:action="@{/profile/delete-post}">
+                                                <input type="hidden" name="post_id" th:value="${post.getId()}">
+                                            </form>
                                         </ul>
                                     </div>
                                 </div>
-
-
-                                <script>
-
-                                    document.getElementById("header").addEventListener("mouseover", mouseOver);
-                                    document.getElementById("header").addEventListener("mouseout", mouseOut);
-
-                                    function mouseOver() {
-                                        document.getElementById("created_at").style.display = "none";
-                                        document.getElementById("settings").style.display = "inline";
-                                    }
-
-                                    function mouseOut() {
-                                        document.getElementById("settings").style.display = "none";
-                                        document.getElementById("created_at").style.display = "inline";
-                                    }
-
-                                </script>
                             </div>
 
                         </div>
                         <hr class="mt-0 mb-3">
-                        <a href="#" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-6" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
+                        <a href="#" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#postModal"  onclick="myFunction(this)" th:data-bs-whatever="${post.getJsonn()}"><p class="card-text text-start fs-6" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
                     </div>
                     <div class="card-footer text-start">
                         <button type="button" class="btn btn-light btn-sm">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">
                             Like <p class="m-0 d-inline-flex" th:text="${post.getRating()}">777</p>
                         </button>
-                        <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#postModal">
+                        <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#postModal" th:data-bs-whatever="${post.getJsonn()}">
                             Comments
                         </button>
                     </div>
@@ -157,6 +143,69 @@
         </div>
     </div>
 </div>
+<script th:inline="javascript">
+
+    // document.getElementById("time-edit").addEventListener("mouseover", mouseOver);
+    // document.getElementById("time-edit").addEventListener("mouseout", mouseOut);
+
+    function mouseOver(divv,bool) {
+        if(typeof (bool)==="number"){
+            let author_id = divv.querySelector('#comment_author_id').value;
+            bool = bool == author_id;
+        }
+
+        if(bool){
+            divv.querySelector('#created_at').style.display = "none";
+            divv.querySelector('#settings').style.display = "inline";
+        }
+
+
+        // document.getElementById("created_at").style.display = "none";
+        // document.getElementById("settings").style.display = "inline";
+    }
+
+    function mouseOut(divv,bool) {
+        if(typeof (bool)==="number"){
+            const author_id = divv.querySelector('#comment_author_id').value;
+            bool = bool == author_id;
+        }
+
+        if(bool) {
+            divv.querySelector('#settings').style.display = "none";
+            divv.querySelector('#created_at').style.display = "inline";
+        }
+        // document.getElementById("settings").style.display = "none";
+        // document.getElementById("created_at").style.display = "inline";
+    }
+
+</script>
+
+<!--   Edit post Modal-->
+<div class="modal fade" id="editPostByAuthorModal" tabindex="-1" aria-labelledby="editPostByAuthorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editPostByAuthorModalLabel">Редактировать пост</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPostForm" th:method="POST" th:action="@{/profile/edit-post}">
+                    <input type="hidden" name="user_id" th:value="${currentUser.getId()}">
+                    <input type="hidden" name="post_id" id="post_id">
+                        <div class="mb-3">
+                            <label for="status" class="col-form-label">Пост:</label>
+                            <textarea class="form-control" name="post" id="post" ></textarea>
+                        </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary" form="editPostForm">Редактировать</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Edit post Modal end-->
 
 <!--   Friends list Modal-->
 <div class="modal fade" id="friendsListModal" tabindex="-1" aria-labelledby="friendsListModalLabel" aria-hidden="true">
@@ -392,23 +441,23 @@
         <div class="modal-content">
             <div class="modal-header pb-2">
                 <h1 class="modal-title fs-5" id="postModalLabel">
-                    <a href="#" class="text-decoration-none text-dark">
+                    <a id="author-href" href="#" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
-                            <img src="https://via.placeholder.com/200" height="44px" class="rounded-circle me-2" alt="...">
-                            <p class="fs-6 mt-2">Dauren Absattarov</p>
+                            <img id="author-avatar" src="https://via.placeholder.com/200" height="44px" class="rounded-circle me-2" alt="...">
+                            <p id="author-name" class="fs-6 mt-2">Dauren Absattarov</p>
                         </div>
                     </a>
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body px-4" style="min-height: 100px">
-                <p class="card-text text-start fs-6">With supporting text below as a natural lead-in to additional content.</p>
+                <p id="post-text" class="card-text text-start fs-6">With supporting text below as a natural lead-in to additional content.</p>
             </div>
             <div class="modal-footer">
                 <div class="container text-start">
                     <button type="button" class="btn btn-light btn-sm fs-6">
                         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
-                        Like <p class="m-0 d-inline-flex">777</p>
+                        Like <p id="like" class="m-0 d-inline-flex">777</p>
                     </button>
                     <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
                         Comments
@@ -421,64 +470,23 @@
                 <div class="container mb-3 mt-4" >
                     <div class="row justify-content-center">
                         <div class="col-9">
-                            <div class="card">
-                                <div class="card-body d-flex">
-                                    <input class="form-control me-2" type="text">
-                                    <button class="btn btn-outline-primary" type="submit">Написать</button>
-
+                            <form th:method="POST" th:action="@{/profile/add-post-comment}">
+                                <div class="card">
+                                    <div class="card-body d-flex">
+                                        <input type="hidden" name="user_id" id="user_id" th:value="${currentUser.getId()}">
+                                        <input type="hidden" name="post_id" id="post_id">
+                                        <input name="comment" class="form-control me-2" type="text">
+                                        <button class="btn btn-outline-primary" type="submit">Написать</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
                 <div class="container mt-2 mb-4 overflow-auto" style="max-height: 500px;">
                     <div class="row justify-content-center">
-                        <div class="col-9">
-                            <p class="fs-5 text-start">1 комментарии:</p>
-                            <div class="card mt-2">
-                                <div class="card-body">
-                                    <div id="comment_header" class="d-flex justify-content-between">
-                                        <div class="d-inline-flex">
-                                            <img src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
-                                            <p class="fs-6 mt-1">Dauren Absattarov</p>
-                                        </div>
-                                        <p id="comment_created_at" class="fs-6">11:43</p>
+                        <div id="comment-storage" class="col-9">
 
-                                        <div id="dropdown_settings" class="dropup-center dropup" style="display: none">
-                                            <button class="btn btn-light fs-6 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                ⋮
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-lg-end">
-                                                <li><button class="dropdown-item" type="button">Редактировать</button></li>
-                                                <li><button class="dropdown-item" type="button">Удалить</button></li>
-                                            </ul>
-                                        </div>
-
-                                        <script>
-
-                                            document.getElementById("comment_header").addEventListener("mouseover", mouseOver2);
-                                            document.getElementById("comment_header").addEventListener("mouseout", mouseOut2);
-
-                                            function mouseOver2() {
-                                                document.getElementById("comment_created_at").style.display = "none";
-                                                document.getElementById("dropdown_settings").style.display = "inline";
-                                            }
-
-                                            function mouseOut2() {
-                                                document.getElementById("dropdown_settings").style.display = "none";
-                                                document.getElementById("comment_created_at").style.display = "inline";
-                                            }
-
-                                        </script>
-
-
-
-                                    </div>
-                                    <p class="card-text text-start" style="width: 90%;
-                                                                                   hyphens: auto">Очень хороши пост.</p>
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -487,6 +495,181 @@
     </div>
 </div>
 <!--Post Modal end-->
+
+<!-- Post Modal-->
+<div class="modal fade" id="templateComment" tabindex="-1" aria-labelledby="templateCommentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-footer">
+                <p id="commentary_count" class="fs-5 text-start">1 комментарии:</p>
+
+
+                <div id="comment-frame" class="card mt-2">
+                                <div id="toEditCommentForm" data-attr="parent" class="card-body">
+                                    <div id="comment_header" class="d-flex justify-content-between">
+                                        <a href="#" class="text-decoration-none text-dark">
+                                        <div class="d-inline-flex authorDDD">
+                                            <img id="comment_author" src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
+                                            <p id="comment_author_name" class="fs-6 mt-1">Dauren Absattarov</p>
+                                        </div>
+                                        </a>
+                                        <div th:onmouseover="mouseOver(this,[[${currentUser.getId()}]])" th:onmouseout="mouseOut(this,[[${currentUser.getId()}]])" class="d-flex align-center">
+                                        <input type="hidden" id="comment_author_id">
+                                        <input type="hidden" id="comment_id">
+                                            <p id="created_at" class="fs-6">11:43</p>
+                                            <div class="d-inline-flex text-end">
+                                        <div id="settings" class="dropup-center dropup" style="display: none">
+                                            <button class="btn btn-light fs-6 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                ⋮
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-lg-end">
+                                                <li><button class="dropdown-item" onclick="displayEditCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Редактировать</button></li>
+                                                <li><button class="dropdown-item" onclick="deleteCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Удалить</button></li>
+                                                <form id="deleteCommentForm" method="post" action="/profile/delete-post-comment">
+                                                    <input type="hidden" id="delete-form-comment-id" name="comment_id">
+                                                </form>
+                                            </ul>
+                                        </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <p id="post_comment" class="card-text text-start" style="width: 90%;
+                                                                                   hyphens: auto">Очень хороши пост.</p>
+                                </div>
+                            </div>
+                <form id="commentEditForm" th:method="POST" th:action="@{/profile/edit-post-comment}">
+                    <input type="hidden" id="comment_id" name="comment_id">
+                    <textarea class="form-control" name="comment" id="comment"></textarea>
+                    <div class="text-end">
+                        <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" type="submit">Отмена</button>
+                        <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" form="commentEditForm" type="submit">Редактировать</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Post Modal end-->
+
+<script th:inline="javascript">
+    function deleteCommentForm(divv){
+        const inputCommentId=divv.querySelector('#delete-form-comment-id');
+        inputCommentId.value=divv.querySelector('#comment_id').value;
+
+        const deleteForm=divv.querySelector('#deleteCommentForm');
+        deleteForm.submit();
+    }
+
+
+    function displayEditCommentForm(divv){
+
+
+
+        const containerr=divv.querySelector('#comment_header');
+        const commentIdSource=divv.querySelector('#comment_id').value;
+
+        const comment=divv.querySelector('#post_comment');
+        comment.style.display="none";
+
+        const commentEditFrame = document.getElementById("commentEditForm").cloneNode(true);
+        const commentId = commentEditFrame.querySelector('#comment_id');
+        const commentTextArea = commentEditFrame.querySelector('#comment');
+
+        commentId.value=commentIdSource;
+        commentTextArea.innerText=comment.innerText;
+
+        divv.appendChild(commentEditFrame);
+
+    }
+
+    function myFunction(button) {
+
+        const commentCount=document.querySelector('#commentary_count');
+
+        document.querySelector('#comment-storage').innerHTML = "";
+
+        const post_obj = JSON.parse(button.getAttribute('data-bs-whatever'));
+
+        commentCount.innerText = post_obj.postComments.length+" комментарии:";
+
+        document.querySelector('#comment-storage').appendChild(commentCount);
+
+        for (let i =0;i<Object.keys(post_obj.postComments).length;i++){
+            const commentFrame = document.getElementById("comment-frame").cloneNode(true);
+
+
+            const options = { weekday: 'long',hour: '2-digit', minute:'2-digit' };
+            const eventt = new Date(post_obj.postComments[i].createdAt);
+
+
+            const authorAvatar = commentFrame.querySelector('#comment_author');
+            const authorName = commentFrame.querySelector('#comment_author_name');
+            const createdAt = commentFrame.querySelector('#created_at');
+            const postComment = commentFrame.querySelector('#post_comment');
+            const authorId = commentFrame.querySelector('#comment_author_id');
+            const comId = commentFrame.querySelector('#comment_id');
+            //const commentCount = commentFrame.querySelector('#commentary_count');
+
+            authorAvatar.src=post_obj.postComments[i].author.avatar;
+            authorName.innerText=post_obj.postComments[i].author.name+" "+post_obj.postComments[i].author.surname;
+            createdAt.innerText=eventt.toLocaleDateString(undefined, options);
+            postComment.innerText=post_obj.postComments[i].comment;
+            authorId.value=post_obj.postComments[i].author.id;
+            comId.value=post_obj.postComments[i].id;
+            //commentCount.innerText=post_obj.postComments.size;
+
+            document.querySelector('#comment-storage').appendChild(commentFrame);
+        }
+
+    }
+
+
+    const exampleModal = document.getElementById('postModal')
+    exampleModal.addEventListener('show.bs.modal', event => {
+
+        const button = event.relatedTarget
+
+        const post_obj = JSON.parse(button.getAttribute('data-bs-whatever'))
+
+        const authorAvatar = exampleModal.querySelector('.modal-header img[id=author-avatar]')
+        const authorName = exampleModal.querySelector('.modal-header p[id=author-name]')
+        const authorPageLink = exampleModal.querySelector('.modal-header a[id=author-href]')
+
+        const postText = exampleModal.querySelector('.modal-body p[id=post-text]')
+        const like = exampleModal.querySelector('.modal-footer p[id=like]')
+        const postId = exampleModal.querySelector('.modal-footer input[id=post_id]')
+        const commentaryCount = exampleModal.querySelector('.modal-footer input[id=commentary_count]')
+
+        authorAvatar.src = post_obj.author.avatar;
+        authorName.innerText = post_obj.author.name+" "+post_obj.author.surname;
+        authorPageLink.href = "/user/"+post_obj.author.id;
+
+        postText.innerText = post_obj.post;
+        like.innerText = post_obj.rating;
+        postId.value = post_obj.id;
+        commentaryCount.innerText = post_obj.postComments.length;
+
+
+
+
+    })
+
+    const editPostModal = document.getElementById('editPostByAuthorModal')
+    editPostModal.addEventListener('show.bs.modal', event => {
+
+        const button = event.relatedTarget
+
+        const post_obj = JSON.parse(button.getAttribute('data-bs-whatever'))
+
+        const postTextarea = editPostModal.querySelector('.modal-body textarea[id=post]');
+        const postId = editPostModal.querySelector('.modal-body input[id=post_id]');
+
+        postTextarea.innerText = post_obj.post;
+
+        postId.value = post_obj.id;
+
+    })
+</script>
 
 
 </body>
