@@ -16,6 +16,10 @@ public class UserPhotoService {
     public UserPhotoService(UserPhotosRepository userPhotosRepository) {
         this.userPhotosRepository = userPhotosRepository;
     }
+
+    public Optional<UserPhoto> findById(int id){
+        return userPhotosRepository.findById(id);
+    }
     @Transactional
     public void save(UserPhoto userPhoto){
         userPhotosRepository.save(userPhoto);

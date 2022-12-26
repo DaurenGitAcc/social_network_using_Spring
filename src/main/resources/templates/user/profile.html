@@ -76,7 +76,7 @@
                                 <button type="button" class="btn m-0 p-0" style="" onclick="imageInput()">
                                     <img src="/./img/plus_edited.png" class="img-fluid d-inline-flex" style="width: 4.5rem;" alt="..."></button>
 
-                                <button th:each="photo:${photos}" type="button" class="btn m-0 p-0" style="" data-bs-toggle="modal" data-bs-target="#photoModal">
+                                <button th:each="photo:${photos}" type="button" class="btn m-0 p-0" style="" onclick="myFunction2(this)" data-bs-toggle="modal" data-bs-target="#photoModal" th:data-bs-whatever="${photo.getJsonn()}">
                                     <img th:src="@{${photo.photoPath}}" class="img-fluid d-inline-flex" style="width: 5.5rem;" alt="..."></button>
 
                             </div>
@@ -366,7 +366,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center" style="height: 500px;background-color: #717171">
-                <img src="https://via.placeholder.com/300" class="img-fluid" style="width: auto;
+                <img id="photo-of-modal" src="https://via.placeholder.com/300" class="img-fluid" style="width: auto;
                                                                                             max-height: 500px;
                                                                                             position: relative;
                                                                                             top: 50%;
@@ -378,7 +378,7 @@
                         <div>
                             <button type="button" class="btn btn-light btn-sm fs-6">
                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
-                                Like <p class="m-0 d-inline-flex">777</p>
+                                Like <p id="like" class="m-0 d-inline-flex">777</p>
                             </button>
                             <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
                                 Comments
@@ -386,11 +386,18 @@
                         </div>
 
                         <div class="d-inline-flex text-end">
+                            <p id="published-date" class="d-inline-flex fs-6 mt-3 me-2">20.11.2022 24:33</p>
                             <button class="btn btn-light fs-5 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 ⋮
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Удалить</a></li>
+                                <li><button class="dropdown-item" onclick="setAvatarForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Установить как аватарку</button></li>
+                                <form id="avatarForm" method="post" action="/profile/set-as-avatar">
+                                    <input type="hidden" name="user_id" th:value="${currentUser.id}">
+                                    <input type="hidden" id="avatar_photo_id" name="photo_id">
+                                </form>
+                                <li><button class="dropdown-item" type="button">Редактировать</button></li>
+                                <li><button class="dropdown-item" type="button">Удалить</button></li>
                             </ul>
                         </div>
                     </div>
@@ -402,34 +409,23 @@
                 <div class="container mb-3 mt-4" >
                     <div class="row justify-content-center">
                         <div class="col-9">
-                            <div class="card">
-                                <div class="card-body d-flex">
-                                    <input class="form-control me-2" type="text">
-                                    <button class="btn btn-outline-primary" type="submit">Написать</button>
-
+                            <form th:method="POST" th:action="@{/profile/add-photo-comment}">
+                                <div class="card">
+                                    <div class="card-body d-flex">
+                                        <input type="hidden" name="user_id" id="user_id" th:value="${currentUser.getId()}">
+                                        <input type="hidden" name="photo_id" id="photo_id">
+                                        <input name="comment" class="form-control me-2" type="text">
+                                        <button class="btn btn-outline-primary" type="submit">Написать</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
                 </div>
                 <div class="container mt-2 mb-4 overflow-auto" style="max-height: 500px;">
                     <div class="row justify-content-center">
-                        <div class="col-9">
-                            <p class="fs-5 text-start">1 комментарии:</p>
-                            <div class="card mt-2">
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-between">
-                                        <div class="d-inline-flex">
-                                            <img src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
-                                            <p class="fs-6 mt-1">Dauren Absattarov</p>
-                                        </div>
-                                        <p class="fs-6">11:43</p>
-                                    </div>
-                                    <p class="card-text text-start" style="width: 90%;
-                                                                                   hyphens: auto">Вау какая классная фотография.</p>
-
-                                </div>
-                            </div>
+                        <div id="comment-storage-photo" class="col-9">
+//////////////// продолжить
                         </div>
                     </div>
                 </div>
@@ -438,6 +434,109 @@
     </div>
 </div>
 <!--Photo Modal end-->
+
+<script>
+    function setAvatarForm(divv){
+        const deleteForm=divv.querySelector('#avatarForm');
+        deleteForm.submit();
+    }
+
+    const photoModal = document.getElementById('photoModal')
+    photoModal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget
+
+        const photo_obj = JSON.parse(button.getAttribute('data-bs-whatever'))
+
+        const photo = photoModal.querySelector('.modal-body img[id=photo-of-modal]')  ///
+        const photoId = photoModal.querySelector('.modal-footer input[id=photo_id]')
+        const photoToAvatarId = photoModal.querySelector('.modal-footer input[id=avatar_photo_id]')
+        const like = photoModal.querySelector('.modal-footer p[id=like]')
+        const time = photoModal.querySelector('.modal-footer p[id=published-date]')
+
+        var options = { hour: '2-digit', minute:'2-digit', year: 'numeric', month: 'long', day: 'numeric' };
+        const eventt = new Date(photo_obj.createdAt);
+
+        photo.src = photo_obj.photoPath;                                   ////
+        like.innerText = photo_obj.rating;
+        time.innerText = eventt.toLocaleDateString(undefined, options);
+        photoId.value = photo_obj.id;
+        photoToAvatarId.value=photo_obj.id;
+    })
+
+    function myFunction2(button) {
+
+        const commentCount=document.querySelector('#commentary_count');
+
+        document.querySelector('#comment-storage-photo').innerHTML = "";
+
+        const photo_obj = JSON.parse(button.getAttribute('data-bs-whatever'));
+
+        commentCount.innerText = photo_obj.userPhotoComments.length+" комментарии:";
+
+        document.querySelector('#comment-storage-photo').appendChild(commentCount);
+
+        for (let i =0;i<Object.keys(photo_obj.userPhotoComments).length;i++){
+            const commentFrame = document.getElementById("photo-comment-frame").cloneNode(true);
+
+
+            const options = { weekday: 'long',hour: '2-digit', minute:'2-digit' };
+            const eventt = new Date(photo_obj.userPhotoComments[i].createdAt);
+
+
+            const authorAvatar = commentFrame.querySelector('#comment_author');
+            const authorName = commentFrame.querySelector('#comment_author_name');
+            const createdAt = commentFrame.querySelector('#created_at');
+            const postComment = commentFrame.querySelector('#post_comment');
+            const authorId = commentFrame.querySelector('#comment_author_id');
+            const comId = commentFrame.querySelector('#comment_id');
+            //const commentCount = commentFrame.querySelector('#commentary_count');
+
+            authorAvatar.src=photo_obj.userPhotoComments[i].author.avatar;
+            authorName.innerText=photo_obj.userPhotoComments[i].author.name+" "+photo_obj.userPhotoComments[i].author.surname;
+            createdAt.innerText=eventt.toLocaleDateString(undefined, options);
+            postComment.innerText=photo_obj.userPhotoComments[i].comment;
+            authorId.value=photo_obj.userPhotoComments[i].author.id;
+            comId.value=photo_obj.userPhotoComments[i].id;
+            //commentCount.innerText=post_obj.postComments.size;
+
+            document.querySelector('#comment-storage-photo').appendChild(commentFrame);
+        }
+
+    }
+
+
+    function deletePhotoCommentForm(divv){
+        const inputCommentId=divv.querySelector('#delete-form-comment-id');
+        inputCommentId.value=divv.querySelector('#comment_id').value;
+
+        const deleteForm=divv.querySelector('#deleteCommentForm');
+        deleteForm.submit();
+    }
+
+
+    function displayEditPhotoCommentForm(divv){
+
+
+
+        const containerr=divv.querySelector('#comment_header');
+        const commentIdSource=divv.querySelector('#comment_id').value;
+
+        const comment=divv.querySelector('#post_comment');
+        comment.style.display="none";
+
+        const commentEditFrame = document.getElementById("photoCommentEditForm").cloneNode(true);
+        const commentId = commentEditFrame.querySelector('#comment_id');
+        const commentTextArea = commentEditFrame.querySelector('#comment');
+
+        commentId.value=commentIdSource;
+        commentTextArea.innerText=comment.innerText;
+
+        divv.appendChild(commentEditFrame);
+
+    }
+
+
+</script>
 
 <!-- Post Modal-->
 <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
@@ -548,6 +647,48 @@
                     <div class="text-end">
                         <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" type="submit">Отмена</button>
                         <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" form="commentEditForm" type="submit">Редактировать</button></div>
+                </form>
+                <div id="photo-comment-frame" class="card mt-2">
+                    <div id="toEditCommentForm" data-attr="parent" class="card-body">
+                        <div id="comment_header" class="d-flex justify-content-between">
+                            <a href="#" class="text-decoration-none text-dark">
+                                <div class="d-inline-flex authorDDD">
+                                    <img id="comment_author" src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
+                                    <p id="comment_author_name" class="fs-6 mt-1">Dauren Absattarov</p>
+                                </div>
+                            </a>
+                            <div th:onmouseover="mouseOver(this,[[${currentUser.getId()}]])" th:onmouseout="mouseOut(this,[[${currentUser.getId()}]])" class="d-flex align-center">
+                                <input type="hidden" id="comment_author_id">
+                                <input type="hidden" id="comment_id">
+                                <p id="created_at" class="fs-6">11:43</p>
+                                <div class="d-inline-flex text-end">
+                                    <div id="settings" class="dropup-center dropup" style="display: none">
+                                        <button class="btn btn-light fs-6 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            ⋮
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-lg-end">
+                                            <li><button class="dropdown-item" onclick="displayEditPhotoCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Редактировать</button></li>
+                                            <li><button class="dropdown-item" onclick="deletePhotoCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Удалить</button></li>
+                                            <form id="deleteCommentForm" method="post" action="/profile/delete-photo-comment">
+                                                <input type="hidden" id="delete-form-comment-id" name="comment_id">
+                                            </form>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <p id="post_comment" class="card-text text-start" style="width: 90%;
+                                                                                   hyphens: auto">Очень хороши пост.</p>
+                    </div>
+                </div>
+
+                <form id="photoCommentEditForm" th:method="POST" th:action="@{/profile/edit-photo-comment}">
+                    <input type="hidden" id="comment_id" name="comment_id">
+                    <textarea class="form-control" name="comment" id="comment"></textarea>
+                    <div class="text-end">
+                        <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" type="submit">Отмена</button>
+                        <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" form="photoCommentEditForm" type="submit">Редактировать</button></div>
                 </form>
             </div>
         </div>

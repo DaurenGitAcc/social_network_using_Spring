@@ -1,14 +1,8 @@
 package com.absattarov.SocialNetwork.controllers;
 
-import com.absattarov.SocialNetwork.models.Post;
-import com.absattarov.SocialNetwork.models.PostComment;
-import com.absattarov.SocialNetwork.models.User;
-import com.absattarov.SocialNetwork.models.UserPhoto;
+import com.absattarov.SocialNetwork.models.*;
 import com.absattarov.SocialNetwork.security.UserDetails;
-import com.absattarov.SocialNetwork.services.PostCommentService;
-import com.absattarov.SocialNetwork.services.PostService;
-import com.absattarov.SocialNetwork.services.UserPhotoService;
-import com.absattarov.SocialNetwork.services.UserService;
+import com.absattarov.SocialNetwork.services.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -37,12 +31,14 @@ public class ProfileController {
 
     private final PostCommentService postCommentService;
     private final UserPhotoService userPhotoService;
+    private final UserPhotoCommentService userPhotoCommentService;
     private final PostService postService;
     private final UserService userService;
 
-    public ProfileController(PostCommentService postCommentService, UserPhotoService userPhotoService, PostService postService, UserService userService) {
+    public ProfileController(PostCommentService postCommentService, UserPhotoService userPhotoService, UserPhotoCommentService userPhotoCommentService, PostService postService, UserService userService) {
         this.postCommentService = postCommentService;
         this.userPhotoService = userPhotoService;
+        this.userPhotoCommentService = userPhotoCommentService;
         this.postService = postService;
         this.userService = userService;
     }
@@ -65,15 +61,26 @@ public class ProfileController {
         currentUser.getPosts().size();
         currentUser.getUserPhotos().size();
 
+
         for (Post p : currentUser.getPosts()) {
             System.out.println(p.getJsonn());
         }
 
         List<Post> postList = currentUser.getPosts();
+        List<UserPhoto> userPhotos = currentUser.getUserPhotos();
+
+        for (UserPhoto user_Photo:userPhotos) {
+            user_Photo.getUserPhotoComments().size();
+        }
         //Collections.sort(postList, Comparator.comparing(Post::getCreatedAt));
         Collections.sort(postList, new Comparator<Post>() {
             public int compare(Post o1, Post o2) {
                 return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+            }
+        });
+        Collections.sort(userPhotos, new Comparator<UserPhoto>() {
+            public int compare(UserPhoto o1, UserPhoto o2) {
+                return o2.getCreatedAt().compareTo(o1.getCreatedAt());
             }
         });
 
@@ -84,8 +91,7 @@ public class ProfileController {
         model.addAttribute("posts", postList);
         model.addAttribute("photos", currentUser.getUserPhotos());
         model.addAttribute("formt", "%02d");
-
-        model.addAttribute("photos", currentUser.getUserPhotos());
+        model.addAttribute("photos", userPhotos);
 
         for (UserPhoto userPhoto:currentUser.getUserPhotos()){
             System.out.println(userPhoto.getPhotoPath());
@@ -134,6 +140,26 @@ public class ProfileController {
 
 
         postCommentService.save(postComment);
+
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/add-photo-comment")
+    public String savePhotoComment(@RequestParam(value = "comment", required = true) String comment,
+                                  @RequestParam(value = "user_id", required = true) int user_id,
+                                  @RequestParam(value = "photo_id", required = true) int photo_id) {
+        UserPhotoComment userPhotoComment = new UserPhotoComment();
+
+        User author = userService.findById(user_id).get();
+        UserPhoto userPhoto = userPhotoService.findById(photo_id).get();
+
+        userPhotoComment.setComment(comment);
+        userPhotoComment.setUserPhoto(userPhoto);
+        userPhotoComment.setAuthor(author);
+        userPhotoComment.setCreatedAt(LocalDateTime.now());
+
+
+        userPhotoCommentService.save(userPhotoComment);
 
         return "redirect:/profile";
     }
@@ -192,11 +218,41 @@ public class ProfileController {
 
         return "redirect:/profile";
     }
+    @PostMapping("/edit-photo-comment")
+    public String editPhotoComment(@RequestParam(value = "comment", required = true) String comment,
+                                  @RequestParam(value = "comment_id", required = true) int comment_id) {
+
+        UserPhotoComment userPhotoComment = userPhotoCommentService.findById(comment_id).get();
+        userPhotoComment.setComment(comment);
+        userPhotoCommentService.update(userPhotoComment);
+
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/set-as-avatar")
+    public String setAvatar(@RequestParam(value = "user_id", required = true) int user_id,
+                                   @RequestParam(value = "photo_id", required = true) int photo_id) {
+
+        User user = userService.findById(user_id).get();
+        UserPhoto userPhoto = userPhotoService.findById(photo_id).get();
+
+        user.setAvatar(userPhoto.getPhotoPath());
+        userService.update(user);
+
+        return "redirect:/profile";
+    }
 
     @PostMapping("/delete-post-comment")
     public String deletePostComment(@RequestParam(value = "comment_id", required = true) int comment_id) {
 
         postCommentService.deleteById(comment_id);
+
+        return "redirect:/profile";
+    }
+    @PostMapping("/delete-photo-comment")
+    public String deletePhotoComment(@RequestParam(value = "comment_id", required = true) int comment_id) {
+
+        userPhotoCommentService.delete(comment_id);
 
         return "redirect:/profile";
     }
