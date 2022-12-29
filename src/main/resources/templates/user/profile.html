@@ -50,7 +50,7 @@
                 <div class="container">
                     <div class="row justify-content-between">
                         <div class="col-5">
-                            <button type="button" class="btn rounded-circle" style="height: auto" data-bs-toggle="modal" data-bs-target="#photoModal">
+                            <button type="button" class="btn rounded-circle" style="height: auto;" onclick="myFunction2(this)" data-bs-toggle="modal" data-bs-target="#photoModal" th:data-bs-whatever="${avatar.getJsonn()}">
                                 <img th:src="@{${currentUser.getAvatar()}}" height="200px" class="rounded-circle me-2" alt="..."></button>
                             <div class="text-center my-4">
                                 <button type="button" class="btn btn-light fw-semibold me-1" data-bs-toggle="modal" data-bs-target="#friendsListModal"><p class="fs-6 m-0" th:text="${friends.size()}">7</p>друзей</button>
@@ -61,7 +61,7 @@
                         <div class="col text-start ms-3">
                             <div class="d-flex justify-content-between">
                                 <p class="fs-3 d-inline-flex" th:text="${currentUser.getName()+' '+currentUser.getSurname()}">Name Surname</p>
-                                <button type="button" class="btn btn-outline-light mb-2"  data-bs-toggle="modal" data-bs-target="#editPersonalInfoModal">
+                                <button th:if="${authorizedUser.getId()==currentUser.getId()}" type="button" class="btn btn-outline-light mb-2"  data-bs-toggle="modal" data-bs-target="#editPersonalInfoModal">
                                     <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkdn5F76ZwDrFLccInphTTfJCjfZLTMxEpfw&usqp=CAU" class="rounded-circle" style="max-width: 38px;" alt="Cinque Terre">
                                     <!--                                        <p class="d-inline-flex fw-semibold">Изменить</p>-->
                                 </button>
@@ -73,7 +73,7 @@
                             <p class="fs-6" th:if="${!currentUser.getJob().isEmpty()}" th:text="${'Работа: '+currentUser.getJob()}">Работа: Geegle</p>
                             <div class="overflow-auto h-auto" style="width: 90%;background-color: #f3f3f3;overflow: auto;
                                                                              white-space: nowrap;">
-                                <button type="button" class="btn m-0 p-0" style="" onclick="imageInput()">
+                                <button th:if="${authorizedUser.getId()==currentUser.getId()}" type="button" class="btn m-0 p-0" style="" onclick="imageInput()">
                                     <img src="/./img/plus_edited.png" class="img-fluid d-inline-flex" style="width: 4.5rem;" alt="..."></button>
 
                                 <button th:each="photo:${photos}" type="button" class="btn m-0 p-0" style="" onclick="myFunction2(this)" data-bs-toggle="modal" data-bs-target="#photoModal" th:data-bs-whatever="${photo.getJsonn()}">
@@ -85,7 +85,7 @@
 
                 </div>
                 <hr>
-                <button type="button" class="btn btn-light fw-semibold my-3"  data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
+                <button th:if="${authorizedUser.getId()==currentUser.getId()}" type="button" class="btn btn-light fw-semibold my-3"  data-bs-toggle="modal" data-bs-target="#addPostModal">Добавить пост</button>
                 <form id="form-upload" th:method="POST" th:action="@{/profile/upload}" enctype="multipart/form-data" style="display: none">
                     <div class="form-group">
                         <input id="input-upload" type="file" name="image" accept="image/*" class="form-control-file">
@@ -127,10 +127,13 @@
                         <a href="#" class="text-decoration-none text-dark" data-bs-toggle="modal" data-bs-target="#postModal"  onclick="myFunction(this)" th:data-bs-whatever="${post.getJsonn()}"><p class="card-text text-start fs-6" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
                     </div>
                     <div class="card-footer text-start">
-                        <button type="button" class="btn btn-light btn-sm">
+                        <button type="submit" class="btn btn-light btn-sm" form="post-like-form">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">
                             Like <p class="m-0 d-inline-flex" th:text="${post.getRating()}">777</p>
                         </button>
+                        <form id="post-like-form" method="post" action="/profile/like-post" style="display: none;">
+                            <input type="hidden" name="post_id" th:value="${post.id}">
+                        </form>
                         <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-toggle="modal" data-bs-target="#postModal" th:data-bs-whatever="${post.getJsonn()}">
                             Comments
                         </button>
@@ -376,10 +379,13 @@
                 <div class="container my-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <button type="button" class="btn btn-light btn-sm fs-6">
+                            <button type="submit" class="btn btn-light btn-sm fs-6" form="photo-like-form">
                                 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
                                 Like <p id="like" class="m-0 d-inline-flex">777</p>
                             </button>
+                            <form id="photo-like-form" method="post" action="/profile/like-photo" style="display: none;">
+                                <input type="hidden" name="photo_id" id="like-photo-id">
+                            </form>
                             <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
                                 Comments
                             </button>
@@ -396,8 +402,10 @@
                                     <input type="hidden" name="user_id" th:value="${currentUser.id}">
                                     <input type="hidden" id="avatar_photo_id" name="photo_id">
                                 </form>
-                                <li><button class="dropdown-item" type="button">Редактировать</button></li>
-                                <li><button class="dropdown-item" type="button">Удалить</button></li>
+                                <li><button class="dropdown-item" onclick="deletePhotoForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)" type="button">Удалить</button></li>
+                                <form id="deletePhotoForm" method="post" action="/profile/delete-user-photo">
+                                    <input type="hidden" id="delete-form-photo-id" name="photo_id">
+                                </form>
                             </ul>
                         </div>
                     </div>
@@ -437,8 +445,13 @@
 
 <script>
     function setAvatarForm(divv){
-        const deleteForm=divv.querySelector('#avatarForm');
-        deleteForm.submit();
+        const submitForm=divv.querySelector('#avatarForm');
+        submitForm.submit();
+    }
+
+    function deletePhotoForm(divv){
+        const submitForm=divv.querySelector('#deletePhotoForm');
+        submitForm.submit();
     }
 
     const photoModal = document.getElementById('photoModal')
@@ -450,7 +463,9 @@
         const photo = photoModal.querySelector('.modal-body img[id=photo-of-modal]')  ///
         const photoId = photoModal.querySelector('.modal-footer input[id=photo_id]')
         const photoToAvatarId = photoModal.querySelector('.modal-footer input[id=avatar_photo_id]')
+        const deleteFormPhotoId = photoModal.querySelector('.modal-footer input[id=delete-form-photo-id]')
         const like = photoModal.querySelector('.modal-footer p[id=like]')
+        const likeInput = photoModal.querySelector('.modal-footer input[id=like-photo-id]')
         const time = photoModal.querySelector('.modal-footer p[id=published-date]')
 
         var options = { hour: '2-digit', minute:'2-digit', year: 'numeric', month: 'long', day: 'numeric' };
@@ -458,9 +473,11 @@
 
         photo.src = photo_obj.photoPath;                                   ////
         like.innerText = photo_obj.rating;
+        likeInput.value = photo_obj.id;
         time.innerText = eventt.toLocaleDateString(undefined, options);
         photoId.value = photo_obj.id;
         photoToAvatarId.value=photo_obj.id;
+        deleteFormPhotoId.value=photo_obj.id;
     })
 
     function myFunction2(button) {

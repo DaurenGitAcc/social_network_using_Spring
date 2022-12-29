@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface UserPhotosRepository extends JpaRepository<UserPhoto,Integer> {
 
     Optional<UserPhoto> findTopByOrderByIdDesc();
+    Optional<UserPhoto> findByPhotoPath(String path);
 
 }

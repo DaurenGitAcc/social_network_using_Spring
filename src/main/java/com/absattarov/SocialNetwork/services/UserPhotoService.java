@@ -20,9 +20,21 @@ public class UserPhotoService {
     public Optional<UserPhoto> findById(int id){
         return userPhotosRepository.findById(id);
     }
+    public Optional<UserPhoto> findByPath(String path){
+        return userPhotosRepository.findByPhotoPath(path);
+    }
     @Transactional
     public void save(UserPhoto userPhoto){
         userPhotosRepository.save(userPhoto);
+    }
+    @Transactional
+    public void update(UserPhoto userPhoto){
+        userPhotosRepository.save(userPhoto);
+    }
+
+    @Transactional
+    public void delete(int id){
+        userPhotosRepository.deleteById(id);
     }
 
     public int getLastId(){

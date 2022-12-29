@@ -85,6 +85,7 @@ public class ProfileController {
         });
 
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("authorizedUser",getCurrentUser());
         model.addAttribute("groups", currentUser.getSubscriptionGroup());
         model.addAttribute("friends", currentUser.getFriends());
         model.addAttribute("subscribers", currentUser.getSubscribers());
@@ -92,6 +93,10 @@ public class ProfileController {
         model.addAttribute("photos", currentUser.getUserPhotos());
         model.addAttribute("formt", "%02d");
         model.addAttribute("photos", userPhotos);
+
+        UserPhoto avatar = userPhotoService.findByPath(currentUser.getAvatar()).get();
+
+        model.addAttribute("avatar", avatar);
 
         for (UserPhoto userPhoto:currentUser.getUserPhotos()){
             System.out.println(userPhoto.getPhotoPath());
@@ -249,6 +254,15 @@ public class ProfileController {
 
         return "redirect:/profile";
     }
+    @PostMapping("/delete-user-photo")
+    public String deletePhoto(@RequestParam(value = "photo_id", required = true) int photo_id) {
+
+        // the photo won't be deleted from the folder
+
+        userPhotoService.delete(photo_id);
+
+        return "redirect:/profile";
+    }
     @PostMapping("/delete-photo-comment")
     public String deletePhotoComment(@RequestParam(value = "comment_id", required = true) int comment_id) {
 
@@ -256,6 +270,20 @@ public class ProfileController {
 
         return "redirect:/profile";
     }
+
+    @PostMapping("/like-photo")
+    public String likePhoto(@RequestParam(value = "photo_id", required = true) int photo_id) {
+
+        UserPhoto userPhoto = userPhotoService.findById(photo_id).get();
+
+        userPhoto.setRating(userPhoto.getRating()+1);
+
+
+        userPhotoService.update(userPhoto);
+
+        return "redirect:/profile";
+    }
+
 
     @PostMapping("/edit-post")
     public String editPost(@RequestParam(value = "post", required = true) String postUpdated,
@@ -266,6 +294,19 @@ public class ProfileController {
         Post post = postService.findById(post_id).get();
 
         post.setPost(postUpdated);
+
+
+        postService.updated(post);
+
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/like-post")
+    public String likePost(@RequestParam(value = "post_id", required = true) int post_id) {
+
+        Post post = postService.findById(post_id).get();
+
+        post.setRating(post.getRating()+1);
 
 
         postService.updated(post);

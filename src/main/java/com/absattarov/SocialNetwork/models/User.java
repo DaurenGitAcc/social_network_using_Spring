@@ -21,8 +21,10 @@ public class User {
     @Column(name = "surname")
     private String surname;
     @Column(name = "email")
+    @JsonIgnore
     private String email;
     @Column(name = "phone_number")
+    @JsonIgnore
     private String phoneNumber;
     @Column(name = "password")
     @JsonIgnore
@@ -31,16 +33,22 @@ public class User {
     private String avatar;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_date")
+    @JsonIgnore
     private LocalDate birthDate;
     @Column(name = "location")
+    @JsonIgnore
     private String location;
     @Column(name = "job")
+    @JsonIgnore
     private String job;
     @Column(name = "school")
+    @JsonIgnore
     private String school;
     @Column(name = "university")
+    @JsonIgnore
     private String university;
     @Column(name = "status")
+    @JsonIgnore
     private String status;
     @Column(name = "role")
     @JsonIgnore
