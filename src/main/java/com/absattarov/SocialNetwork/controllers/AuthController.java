@@ -66,8 +66,7 @@ public class AuthController {
         }
 
         if(Files.exists(path)){
-            int PhotoId = userPhotoService.getLastId()+1;
-            String photoName = "user_"+UserId+"_photo_"+PhotoId;
+            String photoName = "default";
 
             Path fileNameAndPath = Paths.get(path.toString(), photoName+".png");
 

@@ -72,6 +72,7 @@ public class ProfileController {
         for (UserPhoto user_Photo:userPhotos) {
             user_Photo.getUserPhotoComments().size();
         }
+
         //Collections.sort(postList, Comparator.comparing(Post::getCreatedAt));
         Collections.sort(postList, new Comparator<Post>() {
             public int compare(Post o1, Post o2) {
@@ -83,6 +84,8 @@ public class ProfileController {
                 return o2.getCreatedAt().compareTo(o1.getCreatedAt());
             }
         });
+
+        userPhotos.remove(userPhotos.size()-1);
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("authorizedUser",getCurrentUser());

@@ -69,10 +69,6 @@ public class UserController {
     public String toGroups(){
         return "/user/groups";
     }
-    @GetMapping("/friends")
-    public String toFriends(){
-        return "/user/friends";
-    }
 
 
 }

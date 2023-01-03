@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface UsersRepository extends JpaRepository<User,Integer> {
 
     Optional<User> findByPhoneNumber(String phoneNumber);
+    List<User> findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(String name,String surname);
 
 }

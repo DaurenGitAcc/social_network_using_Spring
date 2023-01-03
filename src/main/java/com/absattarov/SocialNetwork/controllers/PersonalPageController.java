@@ -74,6 +74,8 @@ public class PersonalPageController {
             }
         });
 
+        userPhotos.remove(userPhotos.size()-1);
+
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("authorizedUser",getCurrentUser());
         model.addAttribute("groups", currentUser.getSubscriptionGroup());
@@ -84,9 +86,9 @@ public class PersonalPageController {
         model.addAttribute("formt", "%02d");
         model.addAttribute("photos", userPhotos);
 
-//        UserPhoto avatar = userPhotoService.findByPath(currentUser.getAvatar()).get();
-//
-//        model.addAttribute("avatar", avatar);
+        UserPhoto avatar = userPhotoService.findByPath(currentUser.getAvatar()).get();
+
+        model.addAttribute("avatar", avatar);
 
         for (UserPhoto userPhoto:currentUser.getUserPhotos()){
             System.out.println(userPhoto.getPhotoPath());

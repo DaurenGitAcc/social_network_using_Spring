@@ -1,10 +1,148 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personal Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+            crossorigin="anonymous"></script>
 </head>
-<body>
+<body style="background-color: #F0F1F2;">
+
+<nav class="navbar" style="background-color: #FFFFFF;">
+    <div class="container-fluid my-2 mx-5">
+        <a class="navbar-brand fs-3 fw-bold text-primary ms-2">TanysPerson</a>
+        <div class="d-flex justify-content-end">
+            <div class="dropdown-center ms-3">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="max-width: 28px;"
+                         alt="Cinque Terre">
+                    <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container text-center my-5 mx-5">
+    <div class="row justify-content-between">
+        <div class="col-2">
+            <div class="list-group text-start">
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toPersonalPage">My
+                    Profile
+                </button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toNewsPage">News
+                    Page
+                </button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toMessagesPage">
+                    Messages
+                </button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toGroupsPage">
+                    Groups
+                </button>
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary">
+                    Friends
+                </button>
+                <button type="button" class="list-group-item list-group-item-action fw-semibold">Games</button>
+                <form id="toPersonalPage" th:action="@{/profile}" method="get"></form>
+                <form id="toNewsPage" th:action="@{/}" method="get"></form>
+                <form id="toMessagesPage" th:action="@{/messages}" method="get"></form>
+                <form id="toGroupsPage" th:action="@{/groups}" method="get"></form>
+                <form id="toGamesPage" th:action="@{/}" method="get"></form>
+            </div>
+        </div>
+        <div class="col-7 ms-5 mx-auto">
+            <div class="container rounded bg-white py-4 ps-3 mx-auto">
+                <form th:method="GET" th:action="@{/friends}" class="d-flex justify-content-center mb-5" role="search">
+                    <input class="form-control me-2 ms-5" type="text" name="q" style="max-width: 60%;"
+                           placeholder="Поиск знакомых" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Поиск</button>
+                </form>
+
+                <th:block th:each="person:${searchResult}">
+                    <div th:if="${!friendsId.contains(person.getId())}" class="row p-2 mx-auto mt-3"
+                         style="max-width: 72%;">
+                        <div class="col-2 mt-1">
+                            <a class="navbar-brand" th:href="@{/user/{id}(id=${person.id})}"><img
+                                    src="https://via.placeholder.com/200" height="65px" class="rounded-circle me-2"
+                                    alt="..."></a>
+                        </div>
+                        <div class="col-9">
+                            <div class="d-flex justify-content-between">
+                                <a class="navbar-brand" th:href="@{/user/{id}(id=${person.id})}"><p class="fs-5"
+                                                                                                    th:text="${person.name+' '+person.surname}">
+                                    Гулназ Абдижапарова</p></a>
+                                <button th:if="${!receiversId.contains(person.id)}" type="button" onclick="sendRequest(this)" th:data-bs-whatever="${person.getId()}" class="btn btn-primary btn-sm" style="height: 30px;">Подписаться
+                                </button>
+                                <button th:if="${receiversId.contains(person.id)}" type="button" class="btn btn-primary btn-sm" disabled style="height: 30px;">Запрос отправлен
+                                </button>
+                            </div>
+                            <p class="fs-6 fw-light text-start text-nowrap"
+                               th:text="${person.location==null?'Город не указан':person.location}">Актау, 22 года</p>
+                            <hr class="mb-1">
+                        </div>
+                    </div>
+                </th:block>
+                <div th:each="friend:${friends}" class="row p-2 mx-auto mt-3" style="max-width: 72%;">
+                    <div class="col-2 mt-1">
+                        <a class="navbar-brand" th:href="@{/user/{id}(id=${friend.id})}"><img
+                                src="https://via.placeholder.com/200" height="65px" class="rounded-circle me-2"
+                                alt="..."></a>
+                    </div>
+                    <div class="col-9">
+                        <div class="d-flex justify-content-between">
+                            <a class="navbar-brand" th:href="@{/user/{id}(id=${friend.id})}"><p class="fs-5"
+                                                                                                th:text="${friend.name+' '+friend.surname}">
+                                Гулназ Абдижапарова</p></a>
+                            <button type="button" class="btn btn-primary btn-sm" disabled style="height: 30px;">У вас в друзьях
+                            </button>
+                        </div>
+                        <p class="fs-6 fw-light text-start text-nowrap"
+                           th:text="${friend.birthDate==null?'Возраст не указан':friend.birthDate}">Актау, 22 года</p>
+                        <hr class="mb-1">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="col">
+            <a th:href="@{/friends/requests}" class="btn btn-primary position-relative">
+                Запросы
+                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                            <span class="visually-hidden">New alerts</span>
+                        </span>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<form id="send-request-form" th:method="POST" th:action="@{/friends/request-friendship}">
+    <input type="hidden" id="sender_id" name="sender_id" th:value="${authorizedUser.getId()}">
+    <input type="hidden" id="receiver_id" name="receiver_id">
+</form>
+
+<script>
+    function sendRequest(button){
+        const receiver_id = JSON.parse(button.getAttribute('data-bs-whatever'));
+
+        const submitForm=document.querySelector('#send-request-form');
+        const receiverIdInput = submitForm.querySelector('input[id=receiver_id]')
+        receiverIdInput.value=receiver_id
+
+        submitForm.submit();
+    }
+</script>
+
 
 </body>
 </html>

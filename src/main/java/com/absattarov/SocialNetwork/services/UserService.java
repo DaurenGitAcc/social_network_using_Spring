@@ -5,6 +5,7 @@ import com.absattarov.SocialNetwork.repositories.UsersRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,7 +29,9 @@ public class UserService {
         usersRepository.save(user);
     }
 
-
+    public List<User> findBySearchLine(String name,String surname){
+        return usersRepository.findByNameContainingIgnoreCaseAndSurnameContainingIgnoreCase(name,surname);
+    }
 
 
 }
