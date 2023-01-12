@@ -12,8 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,26 +30,30 @@ public class GroupController {
     private final GroupPostService groupPostService;
     private final GroupPostCommentService groupPostCommentService;
 
+    private final GroupContactService groupContactService;
+
     private final SubscriptionsService subscriptionsService;
 
-    public GroupController(UserService userService, GroupService groupService, GroupPhotoService groupPhotoService, GroupPhotoCommentService groupPhotoCommentService, GroupPostService groupPostService, GroupPostCommentService groupPostCommentService, SubscriptionsService subscriptionsService) {
+    public GroupController(UserService userService, GroupService groupService, GroupPhotoService groupPhotoService, GroupPhotoCommentService groupPhotoCommentService, GroupPostService groupPostService, GroupPostCommentService groupPostCommentService, GroupContactService groupContactService, SubscriptionsService subscriptionsService) {
         this.userService = userService;
         this.groupService = groupService;
         this.groupPhotoService = groupPhotoService;
         this.groupPhotoCommentService = groupPhotoCommentService;
         this.groupPostService = groupPostService;
         this.groupPostCommentService = groupPostCommentService;
+        this.groupContactService = groupContactService;
         this.subscriptionsService = subscriptionsService;
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return userService.findByPhoneNumber(userDetails.getUser().getPhoneNumber()).get();
     }
 
     @GetMapping("")
-    public String groups(Model model, @RequestParam(value = "q", defaultValue = "") String searchLine){
+    public String groups(Model model, @ModelAttribute(name = "newGroup") Group newGroup,
+                         @RequestParam(value = "q", defaultValue = "") String searchLine) {
         User authorizedUser = getCurrentUser();
 
         List<Group> subscription = new ArrayList<>();
@@ -59,27 +62,25 @@ public class GroupController {
 
         if (searchLine.isEmpty()) {
             subscription = authorizedUser.getSubscriptionGroup();
-        }
-        else {
+        } else {
             searchResult = groupService.findByNameContaining(searchLine);
-            for (Group g:authorizedUser.getSubscriptionGroup()) {
+            for (Group g : authorizedUser.getSubscriptionGroup()) {
                 subscribedGroupsId.add(g.getId());
             }
         }
 
 
-
-        model.addAttribute("subscriptions",subscription);
-        model.addAttribute("searchResults",searchResult);
-        model.addAttribute("subscribedGroupsId",subscribedGroupsId);
-        model.addAttribute("authorizedUser",authorizedUser);
+        model.addAttribute("subscriptions", subscription);
+        model.addAttribute("searchResults", searchResult);
+        model.addAttribute("subscribedGroupsId", subscribedGroupsId);
+        model.addAttribute("authorizedUser", authorizedUser);
 
         return "/user/groups";
     }
 
     @PostMapping("/subscription")
     public String subscribeGroup(@RequestParam(value = "user_id", defaultValue = "") int user_id,
-                                 @RequestParam(value = "group_id", defaultValue = "") int group_id){
+                                 @RequestParam(value = "group_id", defaultValue = "") int group_id) {
         SubscriptionGroup subscriptionGroup = new SubscriptionGroup();
         subscriptionGroup.setSubscriber(userService.findById(user_id).get());
         subscriptionGroup.setGroup(groupService.findById(group_id).get());
@@ -91,37 +92,37 @@ public class GroupController {
 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public String toProfile(Model model, @PathVariable(name = "id")int id){
+    public String toProfile(Model model, @PathVariable(name = "id") int id) {
         User authorizedUser = getCurrentUser();
         Group currentGroup = groupService.findById(id).get();
         Set<Integer> groupContactsId = new HashSet<>();
         Set<Integer> groupSubscribersId = new HashSet<>();
 
-        for (User contact:currentGroup.getContacts()) {
+        for (User contact : currentGroup.getContacts()) {
             groupContactsId.add(contact.getId());
         }
-        for (User contact:currentGroup.getMembers()) {
+        for (User contact : currentGroup.getMembers()) {
             groupSubscribersId.add(contact.getId());
         }
 
         List<GroupPhoto> groupPhotos = currentGroup.getGroupPhotos();
 
-        for (GroupPhoto groupPhoto:groupPhotos) {
+        for (GroupPhoto groupPhoto : groupPhotos) {
             groupPhoto.getGroupPhotoComments().size();
         }
 
-       // GroupPhoto groupAvatar = groupPhotoService.findByPath(currentGroup.getAvatar()).get();
+        // GroupPhoto groupAvatar = groupPhotoService.findByPath(currentGroup.getAvatar()).get();
 
-        model.addAttribute("authorizedUser",authorizedUser);
-        model.addAttribute("currentGroup",currentGroup);
+        model.addAttribute("authorizedUser", authorizedUser);
+        model.addAttribute("currentGroup", currentGroup);
         //model.addAttribute("groupAvatar",groupAvatar);
-        model.addAttribute("posts",currentGroup.getGroupPosts());
-        model.addAttribute("photos",groupPhotos);
+        model.addAttribute("posts", currentGroup.getGroupPosts());
+        model.addAttribute("photos", groupPhotos);
 
-        model.addAttribute("contacts",currentGroup.getContacts());
-        model.addAttribute("groupContactsId",groupContactsId);
-        model.addAttribute("subscribers",currentGroup.getMembers());
-        model.addAttribute("groupSubscribersId",groupSubscribersId);
+        model.addAttribute("contacts", currentGroup.getContacts());
+        model.addAttribute("groupContactsId", groupContactsId);
+        model.addAttribute("subscribers", currentGroup.getMembers());
+        model.addAttribute("groupSubscribersId", groupSubscribersId);
 
 
         return "/user/group";
@@ -137,27 +138,102 @@ public class GroupController {
         groupService.save(currentGroup);
 
 
+        return "redirect:/groups/" + group_id;
+    }
 
-        return "redirect:/groups/"+group_id;
+    public static String UPLOAD_DIRECTORY_GROUP_DEFAULT_AVATAR = System.getProperty("user.dir") + "\\target\\classes\\static\\group_photos";
+
+    @PostMapping("/create-group")
+    public String createGroup(@ModelAttribute(name = "newGroup") Group newGroup) throws IOException {
+
+        int savedGroupId = groupService.save(newGroup);
+
+        ///
+
+        int groupId = groupService.findById(savedGroupId).get().hashCode();
+        String directoryName = "group_" + groupId;
+        Path path = Paths.get(UPLOAD_DIRECTORY_GROUP_DEFAULT_AVATAR, directoryName);
+
+        if (!Files.exists(path)) {
+            new File(path.toString()).mkdirs();
+        }
+
+        if (Files.exists(path)) {
+            String photoName = "default";
+
+            Path fileNameAndPath = Paths.get(path.toString(), photoName + ".png");
+
+            String fileNameAndPathToString = fileNameAndPath.toString().replace("\\", "/");
+            String cuttedPath = fileNameAndPathToString.substring(fileNameAndPathToString.lastIndexOf("/target"));
+
+            writePhoto(cuttedPath.substring(1));
+            cuttedPath = cuttedPath.substring(cuttedPath.lastIndexOf("/group_photos"));
+
+            GroupPhoto photo = new GroupPhoto();
+            photo.setGroup(groupService.findById(savedGroupId).get());
+
+            photo.setPhotoPath(cuttedPath);
+            photo.setCreatedAt(LocalDateTime.now());
+            photo.setRating(0);
+            groupPhotoService.save(photo);
+            ///
+            Group group = groupService.findById(savedGroupId).get();      // set avatar of group
+            group.setAvatar(cuttedPath);
+            groupService.update(group);
+
+
+            SubscriptionGroup subscriptionGroup = new SubscriptionGroup();  // subscription
+            subscriptionGroup.setSubscriber(getCurrentUser());
+            subscriptionGroup.setGroup(groupService.findById(savedGroupId).get());
+            subscriptionsService.save(subscriptionGroup);
+
+            GroupContact groupContact = new GroupContact();            // insert in group's contacts
+            groupContact.setGroup(groupService.findById(savedGroupId).get());
+            groupContact.setUser(getCurrentUser());
+            groupContactService.save(groupContact);
+
+        } else {
+            System.out.println("Upload fails");
+        }
+        ///
+
+        return "redirect:/groups/" + savedGroupId;
+    }
+
+    private void writePhoto(String path) throws IOException {
+        File copied = new File(path);
+        try (
+                InputStream in = new BufferedInputStream(
+                        new FileInputStream("src/main/resources/static/img/default-avatar-group.png"));
+                OutputStream out = new BufferedOutputStream(
+                        new FileOutputStream(copied))) {
+
+            byte[] buffer = new byte[1024];
+            int lengthRead;
+            while ((lengthRead = in.read(buffer)) > 0) {
+                out.write(buffer, 0, lengthRead);
+                out.flush();
+            }
+        }
     }
 
     @PostMapping("/post")
     public String savePost(@RequestParam(value = "group_id", defaultValue = "") int group_id,
-                            @RequestParam(value = "post", required = true) String postText){
+                           @RequestParam(value = "post", required = true) String postText) {
         GroupPost newPost = new GroupPost();
 
         newPost.setGroup(groupService.findById(group_id).get());
         newPost.setPost(postText);
         groupPostService.save(newPost);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/delete-post")
     public String deletePost(@RequestParam(value = "post_id", required = true) int post_id,
                              @RequestParam(value = "group_id", required = true) int group_id) {
         groupPostService.deleteById(post_id);
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/edit-post")
@@ -172,16 +248,16 @@ public class GroupController {
 
         groupPostService.update(post);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/like-post")
     public String likePost(@RequestParam(value = "post_id", required = true) int post_id,
                            @RequestParam(value = "group_id", required = true) int group_id) {
         GroupPost post = groupPostService.findById(post_id).get();
-        post.setRating(post.getRating()+1);
+        post.setRating(post.getRating() + 1);
         groupPostService.update(post);
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\target\\classes\\static\\group_photos";
@@ -191,42 +267,41 @@ public class GroupController {
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(filename.lastIndexOf(".")));
     }
+
     @PostMapping("/upload")
     public String uploadImage(Model model, @RequestParam("image") MultipartFile file,
                               @RequestParam(value = "group_id", defaultValue = "") int group_id) throws IOException {
         Group currentGroup = groupService.findById(group_id).get();
 
         int GroupId = currentGroup.hashCode();
-        String directoryName = "group_"+GroupId;
-        Path path = Paths.get(UPLOAD_DIRECTORY,directoryName);
+        String directoryName = "group_" + GroupId;
+        Path path = Paths.get(UPLOAD_DIRECTORY, directoryName);
 
-        if(!Files.exists(path)){
+        if (!Files.exists(path)) {
             new File(path.toString()).mkdirs();
         }
 
-        if(Files.exists(path)){
-            int PhotoId = groupPhotoService.getLastId()+1;
-            String photoName = "group_"+GroupId+"_photo_"+PhotoId;
+        if (Files.exists(path)) {
+            int PhotoId = groupPhotoService.getLastId() + 1;
+            String photoName = "group_" + GroupId + "_photo_" + PhotoId;
 
-            Path fileNameAndPath = Paths.get(path.toString(), photoName+getExtensionByStringHandling(file.getOriginalFilename()).get());
+            Path fileNameAndPath = Paths.get(path.toString(), photoName + getExtensionByStringHandling(file.getOriginalFilename()).get());
             Files.write(fileNameAndPath, file.getBytes());
 
             GroupPhoto groupPhoto = new GroupPhoto();
             groupPhoto.setGroup(currentGroup);
-            String pathToString=fileNameAndPath.toString().replace("\\","/");
-            String cuttedPath=pathToString.substring(pathToString.lastIndexOf("/group_photos"));
+            String pathToString = fileNameAndPath.toString().replace("\\", "/");
+            String cuttedPath = pathToString.substring(pathToString.lastIndexOf("/group_photos"));
             groupPhoto.setPhotoPath(cuttedPath);
             groupPhoto.setCreatedAt(LocalDateTime.now());
             groupPhoto.setRating(0);
             groupPhotoService.save(groupPhoto);
-        }
-        else {
+        } else {
             System.out.println("Upload fails");
         }
 
 
-
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/set-as-avatar")
@@ -239,7 +314,7 @@ public class GroupController {
         group.setAvatar(photo.getPhotoPath());
         groupService.update(group);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/delete-user-photo")
@@ -250,7 +325,7 @@ public class GroupController {
 
         groupPhotoService.delete(photo_id);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/add-photo-comment")
@@ -267,16 +342,18 @@ public class GroupController {
         photoComment.setGroupPhoto(groupPhoto);
         groupPhotoCommentService.save(photoComment);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
+
     @PostMapping("/delete-photo-comment")
     public String deletePhotoComment(@RequestParam(value = "comment_id", required = true) int comment_id,
                                      @RequestParam(value = "group_id", required = true) int group_id) {
 
         groupPhotoCommentService.delete(comment_id);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
+
     @PostMapping("/edit-photo-comment")
     public String editPhotoComment(@RequestParam(value = "comment", required = true) String comment,
                                    @RequestParam(value = "comment_id", required = true) int comment_id,
@@ -286,7 +363,7 @@ public class GroupController {
         photoComment.setComment(comment);
         groupPhotoCommentService.update(photoComment);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
 
     @PostMapping("/add-post-comment")
@@ -303,8 +380,9 @@ public class GroupController {
         postComment.setCreatedAt(LocalDateTime.now());
         groupPostCommentService.save(postComment);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
+
     @PostMapping("/edit-post-comment")
     public String editPostComment(@RequestParam(value = "comment", required = true) String comment,
                                   @RequestParam(value = "comment_id", required = true) int comment_id,
@@ -314,17 +392,17 @@ public class GroupController {
         postComment.setComment(comment);
         groupPostCommentService.update(postComment);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
+
     @PostMapping("/delete-post-comment")
     public String deletePostComment(@RequestParam(value = "comment_id", required = true) int comment_id,
                                     @RequestParam(value = "group_id", required = true) int group_id) {
 
         groupPostCommentService.delete(comment_id);
 
-        return "redirect:/groups/"+group_id;
+        return "redirect:/groups/" + group_id;
     }
-
 
 
 }

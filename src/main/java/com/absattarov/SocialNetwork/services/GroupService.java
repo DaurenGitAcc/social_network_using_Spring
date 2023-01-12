@@ -5,6 +5,7 @@ import com.absattarov.SocialNetwork.repositories.GroupsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +26,11 @@ public class GroupService {
     }
 
     @Transactional
-    public void save(Group group){
-        groupsRepository.save(group);
+    public int save(Group group){
+        group.setCreatedAt(LocalDateTime.now());
+        group.setAvatar("");
+
+        return groupsRepository.save(group).getId();
     }
     @Transactional
     public void update(Group group){

@@ -11,9 +11,41 @@ public class GroupContact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "user",referencedColumnName = "id")
+    @JoinColumn(name = "userr",referencedColumnName = "id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "group",referencedColumnName = "id")
+    @JoinColumn(name = "groupp",referencedColumnName = "id")
     private Group group;
+
+    public GroupContact() {
+    }
+
+    public GroupContact(User user, Group group) {
+        this.user = user;
+        this.group = group;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 }

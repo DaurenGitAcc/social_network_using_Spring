@@ -25,8 +25,8 @@ public class Group {
     @ManyToMany
     @JoinTable(
             name = "group_contact",
-            joinColumns = @JoinColumn(name = "group"),
-            inverseJoinColumns = @JoinColumn(name = "user"))
+            joinColumns = @JoinColumn(name = "groupp"),
+            inverseJoinColumns = @JoinColumn(name = "userr"))
     @JsonIgnore
     private List<User> contacts;
 

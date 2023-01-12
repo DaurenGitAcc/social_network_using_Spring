@@ -48,9 +48,9 @@
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toNewsPage">News
                     Page
                 </button>
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary">Messages
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toMessagesPage">Messages
                 </button>
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toGroupsPage">
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary">
                     Groups
                 </button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toFriendsPage">
@@ -59,7 +59,7 @@
                 <button type="button" class="list-group-item list-group-item-action fw-semibold">Games</button>
                 <form id="toProfilePage" th:action="@{/profile}" method="get"></form>
                 <form id="toNewsPage" th:action="@{/}" method="get"></form>
-                <form id="toGroupsPage" th:action="@{/groups}" method="get"></form>
+                <form id="toMessagesPage" th:action="@{/messages}" method="get"></form>
                 <form id="toFriendsPage" th:action="@{/friends}" method="get"></form>
                 <form id="toGamesPage" th:action="@{/}" method="get"></form>
             </div>
@@ -128,8 +128,44 @@
 
             </div>
         </div>
+
+        <div class="col">
+            <button type="button" class="btn btn-primary position-relative fw-bold" data-bs-toggle="modal" data-bs-target="#createGroupModal">
+                +
+            </button>
+        </div>
+
     </div>
 </div>
+<!--create group modal-->
+<div class="modal fade" id="createGroupModal" tabindex="-1" aria-labelledby="createGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createGroupModalLabel">Создание группы</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createGroupForm" th:method="POST" th:action="@{/groups/create-group}" th:object="${newGroup}">
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Название:</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="col-form-label">Описание:</label>
+                        <textarea class="form-control" id="description" th:field="*{description}"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary" form="createGroupForm">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--create group modal end-->
 
 <form id="subscriptionForm" th:method="POST" th:action="@{/groups/subscription}">
     <input type="hidden" name="user_id" th:value="${authorizedUser.id}">
