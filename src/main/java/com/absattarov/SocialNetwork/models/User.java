@@ -73,7 +73,7 @@ public class User {
     @JsonIgnore
     private List<UserPhoto> userPhotos;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "author")
+    @OneToMany(mappedBy = "author")
     @JsonIgnore
     private List<Post> posts;
 

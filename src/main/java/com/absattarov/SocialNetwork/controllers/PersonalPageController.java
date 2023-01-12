@@ -4,6 +4,7 @@ import com.absattarov.SocialNetwork.models.Post;
 import com.absattarov.SocialNetwork.models.User;
 import com.absattarov.SocialNetwork.models.UserPhoto;
 import com.absattarov.SocialNetwork.security.UserDetails;
+import com.absattarov.SocialNetwork.services.RequestFriendshipService;
 import com.absattarov.SocialNetwork.services.UserPhotoService;
 import com.absattarov.SocialNetwork.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,9 +30,12 @@ public class PersonalPageController {
     private final UserService userService;
     private final UserPhotoService userPhotoService;
 
-    public PersonalPageController(UserService userService, UserPhotoService userPhotoService) {
+    private final RequestFriendshipService requestFriendshipService;
+
+    public PersonalPageController(UserService userService, UserPhotoService userPhotoService, RequestFriendshipService requestFriendshipService) {
         this.userService = userService;
         this.userPhotoService = userPhotoService;
+        this.requestFriendshipService = requestFriendshipService;
     }
 
     public User getCurrentUser(){
@@ -76,8 +80,23 @@ public class PersonalPageController {
 
         userPhotos.remove(userPhotos.size()-1);
 
+        User authorizedUser = getCurrentUser();
+        authorizedUser.getFriends().size();
+
+
+        int displayButtonVariant=0;
+        if (authorizedUser.getFriends().contains(currentUser)){
+            displayButtonVariant=1;
+        } else if (requestFriendshipService.findBySenderAndReceiver(authorizedUser,currentUser).isPresent()) {
+            displayButtonVariant=2;
+        }else {
+            displayButtonVariant=3;
+        }
+
+
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("authorizedUser",getCurrentUser());
+        model.addAttribute("authorizedUser",authorizedUser);
+        model.addAttribute("displayButtonVariant",displayButtonVariant);
         model.addAttribute("groups", currentUser.getSubscriptionGroup());
         model.addAttribute("friends", currentUser.getFriends());
         model.addAttribute("subscribers", currentUser.getSubscribers());

@@ -89,6 +89,7 @@ public class ProfileController {
 
         model.addAttribute("currentUser", currentUser);
         model.addAttribute("authorizedUser",getCurrentUser());
+        model.addAttribute("displayButtonVariant",0);
         model.addAttribute("groups", currentUser.getSubscriptionGroup());
         model.addAttribute("friends", currentUser.getFriends());
         model.addAttribute("subscribers", currentUser.getSubscribers());

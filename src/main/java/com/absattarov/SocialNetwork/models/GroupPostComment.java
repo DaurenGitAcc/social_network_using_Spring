@@ -1,5 +1,7 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -16,6 +18,7 @@ public class GroupPostComment {
     private String comment;
     @ManyToOne
     @JoinColumn(name = "group_post",referencedColumnName = "id")
+    @JsonIgnore
     private GroupPost groupPost;
     @ManyToOne
     @JoinColumn(name = "author",referencedColumnName = "id")

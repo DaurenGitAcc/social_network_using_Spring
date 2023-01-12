@@ -1,30 +1,46 @@
 package com.absattarov.SocialNetwork.controllers;
 
-import com.absattarov.SocialNetwork.models.Group;
-import com.absattarov.SocialNetwork.models.User;
+import com.absattarov.SocialNetwork.models.*;
 import com.absattarov.SocialNetwork.security.UserDetails;
-import com.absattarov.SocialNetwork.services.GroupService;
-import com.absattarov.SocialNetwork.services.UserService;
+import com.absattarov.SocialNetwork.services.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Controller
 @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_MODER','ROLE_ADMIN')")
-@RequestMapping("/group")
+@RequestMapping("/groups")
 public class GroupController {
     private final UserService userService;
     private final GroupService groupService;
+    private final GroupPhotoService groupPhotoService;
+    private final GroupPhotoCommentService groupPhotoCommentService;
+    private final GroupPostService groupPostService;
+    private final GroupPostCommentService groupPostCommentService;
 
-    public GroupController(UserService userService, GroupService groupService) {
+    private final SubscriptionsService subscriptionsService;
+
+    public GroupController(UserService userService, GroupService groupService, GroupPhotoService groupPhotoService, GroupPhotoCommentService groupPhotoCommentService, GroupPostService groupPostService, GroupPostCommentService groupPostCommentService, SubscriptionsService subscriptionsService) {
         this.userService = userService;
         this.groupService = groupService;
+        this.groupPhotoService = groupPhotoService;
+        this.groupPhotoCommentService = groupPhotoCommentService;
+        this.groupPostService = groupPostService;
+        this.groupPostCommentService = groupPostCommentService;
+        this.subscriptionsService = subscriptionsService;
     }
 
     public User getCurrentUser(){
@@ -33,21 +49,282 @@ public class GroupController {
         return userService.findByPhoneNumber(userDetails.getUser().getPhoneNumber()).get();
     }
 
+    @GetMapping("")
+    public String groups(Model model, @RequestParam(value = "q", defaultValue = "") String searchLine){
+        User authorizedUser = getCurrentUser();
+
+        List<Group> subscription = new ArrayList<>();
+        List<Group> searchResult = new ArrayList<>();
+        Set<Integer> subscribedGroupsId = new HashSet<>();
+
+        if (searchLine.isEmpty()) {
+            subscription = authorizedUser.getSubscriptionGroup();
+        }
+        else {
+            searchResult = groupService.findByNameContaining(searchLine);
+            for (Group g:authorizedUser.getSubscriptionGroup()) {
+                subscribedGroupsId.add(g.getId());
+            }
+        }
+
+
+
+        model.addAttribute("subscriptions",subscription);
+        model.addAttribute("searchResults",searchResult);
+        model.addAttribute("subscribedGroupsId",subscribedGroupsId);
+        model.addAttribute("authorizedUser",authorizedUser);
+
+        return "/user/groups";
+    }
+
+    @PostMapping("/subscription")
+    public String subscribeGroup(@RequestParam(value = "user_id", defaultValue = "") int user_id,
+                                 @RequestParam(value = "group_id", defaultValue = "") int group_id){
+        SubscriptionGroup subscriptionGroup = new SubscriptionGroup();
+        subscriptionGroup.setSubscriber(userService.findById(user_id).get());
+        subscriptionGroup.setGroup(groupService.findById(group_id).get());
+        subscriptionsService.save(subscriptionGroup);
+
+
+        return "redirect:/groups";
+    }
+
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public String toProfile(Model model, @PathVariable(name = "id")int id){
-        User currentUser = userService.findById(id).get();
-        Group group = groupService.findById(id).get();
+        User authorizedUser = getCurrentUser();
+        Group currentGroup = groupService.findById(id).get();
+        Set<Integer> groupContactsId = new HashSet<>();
+        Set<Integer> groupSubscribersId = new HashSet<>();
 
-        model.addAttribute("currentUser",currentUser);
-        model.addAttribute("group",group);
-        model.addAttribute("subscribers",group.getMembers());
-        model.addAttribute("posts",group.getGroupPosts());
-        model.addAttribute("photos",group.getGroupPhotos());
-        model.addAttribute("contacts",group.getContacts());
-        model.addAttribute("contacts",group.getContacts());
+        for (User contact:currentGroup.getContacts()) {
+            groupContactsId.add(contact.getId());
+        }
+        for (User contact:currentGroup.getMembers()) {
+            groupSubscribersId.add(contact.getId());
+        }
+
+        List<GroupPhoto> groupPhotos = currentGroup.getGroupPhotos();
+
+        for (GroupPhoto groupPhoto:groupPhotos) {
+            groupPhoto.getGroupPhotoComments().size();
+        }
+
+       // GroupPhoto groupAvatar = groupPhotoService.findByPath(currentGroup.getAvatar()).get();
+
+        model.addAttribute("authorizedUser",authorizedUser);
+        model.addAttribute("currentGroup",currentGroup);
+        //model.addAttribute("groupAvatar",groupAvatar);
+        model.addAttribute("posts",currentGroup.getGroupPosts());
+        model.addAttribute("photos",groupPhotos);
+
+        model.addAttribute("contacts",currentGroup.getContacts());
+        model.addAttribute("groupContactsId",groupContactsId);
+        model.addAttribute("subscribers",currentGroup.getMembers());
+        model.addAttribute("groupSubscribersId",groupSubscribersId);
+
 
         return "/user/group";
     }
+
+    @PostMapping("/groupInfo")
+    public String saveInfo(@ModelAttribute(name = "currentGroup") Group groupWithUpdatedInfo,
+                           @RequestParam(value = "group_id", defaultValue = "") int group_id) {
+
+        Group currentGroup = groupService.findById(group_id).get();
+        currentGroup.setDescription(groupWithUpdatedInfo.getDescription());
+        currentGroup.setCreatedAt(groupWithUpdatedInfo.getCreatedAt());
+        groupService.save(currentGroup);
+
+
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/post")
+    public String savePost(@RequestParam(value = "group_id", defaultValue = "") int group_id,
+                            @RequestParam(value = "post", required = true) String postText){
+        GroupPost newPost = new GroupPost();
+
+        newPost.setGroup(groupService.findById(group_id).get());
+        newPost.setPost(postText);
+        groupPostService.save(newPost);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/delete-post")
+    public String deletePost(@RequestParam(value = "post_id", required = true) int post_id,
+                             @RequestParam(value = "group_id", required = true) int group_id) {
+        groupPostService.deleteById(post_id);
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/edit-post")
+    public String editPost(@RequestParam(value = "post", required = true) String postUpdated,
+                           @RequestParam(value = "group_id", required = true) int group_id,
+                           @RequestParam(value = "post_id", required = true) int post_id) {
+
+        GroupPost post = groupPostService.findById(post_id).get();
+
+        post.setPost(postUpdated);
+
+
+        groupPostService.update(post);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/like-post")
+    public String likePost(@RequestParam(value = "post_id", required = true) int post_id,
+                           @RequestParam(value = "group_id", required = true) int group_id) {
+        GroupPost post = groupPostService.findById(post_id).get();
+        post.setRating(post.getRating()+1);
+        groupPostService.update(post);
+        return "redirect:/groups/"+group_id;
+    }
+
+    public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "\\target\\classes\\static\\group_photos";
+
+    public Optional<String> getExtensionByStringHandling(String filename) {
+        return Optional.ofNullable(filename)
+                .filter(f -> f.contains("."))
+                .map(f -> f.substring(filename.lastIndexOf(".")));
+    }
+    @PostMapping("/upload")
+    public String uploadImage(Model model, @RequestParam("image") MultipartFile file,
+                              @RequestParam(value = "group_id", defaultValue = "") int group_id) throws IOException {
+        Group currentGroup = groupService.findById(group_id).get();
+
+        int GroupId = currentGroup.hashCode();
+        String directoryName = "group_"+GroupId;
+        Path path = Paths.get(UPLOAD_DIRECTORY,directoryName);
+
+        if(!Files.exists(path)){
+            new File(path.toString()).mkdirs();
+        }
+
+        if(Files.exists(path)){
+            int PhotoId = groupPhotoService.getLastId()+1;
+            String photoName = "group_"+GroupId+"_photo_"+PhotoId;
+
+            Path fileNameAndPath = Paths.get(path.toString(), photoName+getExtensionByStringHandling(file.getOriginalFilename()).get());
+            Files.write(fileNameAndPath, file.getBytes());
+
+            GroupPhoto groupPhoto = new GroupPhoto();
+            groupPhoto.setGroup(currentGroup);
+            String pathToString=fileNameAndPath.toString().replace("\\","/");
+            String cuttedPath=pathToString.substring(pathToString.lastIndexOf("/group_photos"));
+            groupPhoto.setPhotoPath(cuttedPath);
+            groupPhoto.setCreatedAt(LocalDateTime.now());
+            groupPhoto.setRating(0);
+            groupPhotoService.save(groupPhoto);
+        }
+        else {
+            System.out.println("Upload fails");
+        }
+
+
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/set-as-avatar")
+    public String setAvatar(@RequestParam(value = "group_id", required = true) int group_id,
+                            @RequestParam(value = "photo_id", required = true) int photo_id) {
+
+        Group group = groupService.findById(group_id).get();
+        GroupPhoto photo = groupPhotoService.findById(photo_id).get();
+
+        group.setAvatar(photo.getPhotoPath());
+        groupService.update(group);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/delete-user-photo")
+    public String deletePhoto(@RequestParam(value = "group_id", required = true) int group_id,
+                              @RequestParam(value = "photo_id", required = true) int photo_id) {
+
+        // the photo won't be deleted from the folder
+
+        groupPhotoService.delete(photo_id);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/add-photo-comment")
+    public String savePhotoComment(@RequestParam(value = "comment", required = true) String comment,
+                                   @RequestParam(value = "user_id", required = true) int user_id,
+                                   @RequestParam(value = "group_id", required = true) int group_id,
+                                   @RequestParam(value = "photo_id", required = true) int photo_id) {
+        GroupPhotoComment photoComment = new GroupPhotoComment();
+        User author = userService.findById(user_id).get();
+        GroupPhoto groupPhoto = groupPhotoService.findById(photo_id).get();
+        photoComment.setComment(comment);
+        photoComment.setAuthor(author);
+        photoComment.setCreatedAt(LocalDateTime.now());
+        photoComment.setGroupPhoto(groupPhoto);
+        groupPhotoCommentService.save(photoComment);
+
+        return "redirect:/groups/"+group_id;
+    }
+    @PostMapping("/delete-photo-comment")
+    public String deletePhotoComment(@RequestParam(value = "comment_id", required = true) int comment_id,
+                                     @RequestParam(value = "group_id", required = true) int group_id) {
+
+        groupPhotoCommentService.delete(comment_id);
+
+        return "redirect:/groups/"+group_id;
+    }
+    @PostMapping("/edit-photo-comment")
+    public String editPhotoComment(@RequestParam(value = "comment", required = true) String comment,
+                                   @RequestParam(value = "comment_id", required = true) int comment_id,
+                                   @RequestParam(value = "group_id", required = true) int group_id) {
+
+        GroupPhotoComment photoComment = groupPhotoCommentService.findById(comment_id).get();
+        photoComment.setComment(comment);
+        groupPhotoCommentService.update(photoComment);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+    @PostMapping("/add-post-comment")
+    public String savePostComment(@RequestParam(value = "comment", required = true) String comment,
+                                  @RequestParam(value = "user_id", required = true) int user_id,
+                                  @RequestParam(value = "group_id", required = true) int group_id,
+                                  @RequestParam(value = "post_id", required = true) int post_id) {
+        GroupPostComment postComment = new GroupPostComment();
+        User author = userService.findById(user_id).get();
+        GroupPost groupPost = groupPostService.findById(post_id).get();
+        postComment.setComment(comment);
+        postComment.setAuthor(author);
+        postComment.setGroupPost(groupPost);
+        postComment.setCreatedAt(LocalDateTime.now());
+        groupPostCommentService.save(postComment);
+
+        return "redirect:/groups/"+group_id;
+    }
+    @PostMapping("/edit-post-comment")
+    public String editPostComment(@RequestParam(value = "comment", required = true) String comment,
+                                  @RequestParam(value = "comment_id", required = true) int comment_id,
+                                  @RequestParam(value = "group_id", required = true) int group_id) {
+
+        GroupPostComment postComment = groupPostCommentService.findById(comment_id).get();
+        postComment.setComment(comment);
+        groupPostCommentService.update(postComment);
+
+        return "redirect:/groups/"+group_id;
+    }
+    @PostMapping("/delete-post-comment")
+    public String deletePostComment(@RequestParam(value = "comment_id", required = true) int comment_id,
+                                    @RequestParam(value = "group_id", required = true) int group_id) {
+
+        groupPostCommentService.delete(comment_id);
+
+        return "redirect:/groups/"+group_id;
+    }
+
+
 
 }

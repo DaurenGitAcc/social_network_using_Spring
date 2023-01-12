@@ -1,5 +1,7 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,18 +27,22 @@ public class Group {
             name = "group_contact",
             joinColumns = @JoinColumn(name = "group"),
             inverseJoinColumns = @JoinColumn(name = "user"))
+    @JsonIgnore
     private List<User> contacts;
 
     @ManyToMany
     @JoinTable(
             name = "subscription_group",
-            joinColumns = @JoinColumn(name = "group"),
+            joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "subscriber"))
+    @JsonIgnore
     private List<User> members;
 
     @OneToMany(mappedBy = "group")
+    @JsonIgnore
     private List<GroupPhoto> groupPhotos;
     @OneToMany(mappedBy = "group")
+    @JsonIgnore
     private List<GroupPost> groupPosts;
 
     public Group() {
@@ -120,5 +126,10 @@ public class Group {
 
     public void setGroupPosts(List<GroupPost> groupPosts) {
         this.groupPosts = groupPosts;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }

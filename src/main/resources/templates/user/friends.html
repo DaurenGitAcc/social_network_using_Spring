@@ -73,7 +73,11 @@
                          style="max-width: 72%;">
                         <div class="col-2 mt-1">
                             <a class="navbar-brand" th:href="@{/user/{id}(id=${person.id})}"><img
-                                    src="https://via.placeholder.com/200" height="65px" class="rounded-circle me-2"
+                                    src="https://via.placeholder.com/200" style="vertical-align: middle;
+                                          width: 65px;
+                                          height: 65px;
+                                          object-fit: contain;
+                                          border-radius: 50%;" class="rounded-circle me-2"
                                     alt="..."></a>
                         </div>
                         <div class="col-9">
@@ -95,7 +99,11 @@
                 <div th:each="friend:${friends}" class="row p-2 mx-auto mt-3" style="max-width: 72%;">
                     <div class="col-2 mt-1">
                         <a class="navbar-brand" th:href="@{/user/{id}(id=${friend.id})}"><img
-                                src="https://via.placeholder.com/200" height="65px" class="rounded-circle me-2"
+                                th:src="@{${friend.avatar}}" style="vertical-align: middle;
+                                          width: 65px;
+                                          height: 65px;
+                                          object-fit: contain;
+                                          border-radius: 50%;" class="rounded-circle me-2"
                                 alt="..."></a>
                     </div>
                     <div class="col-9">

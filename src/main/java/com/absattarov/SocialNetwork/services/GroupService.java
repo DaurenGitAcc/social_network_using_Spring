@@ -20,4 +20,17 @@ public class GroupService {
         return groupsRepository.findById(id);
     }
 
+    public List<Group> findByNameContaining(String name){
+        return groupsRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    @Transactional
+    public void save(Group group){
+        groupsRepository.save(group);
+    }
+    @Transactional
+    public void update(Group group){
+        groupsRepository.save(group);
+    }
+
 }

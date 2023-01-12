@@ -24,8 +24,7 @@ public class Message {
     public Message() {
     }
 
-    public Message(int id, LocalDateTime createdAt, String message) {
-        this.id = id;
+    public Message(LocalDateTime createdAt, String message) {
         this.createdAt = createdAt;
         this.message = message;
     }

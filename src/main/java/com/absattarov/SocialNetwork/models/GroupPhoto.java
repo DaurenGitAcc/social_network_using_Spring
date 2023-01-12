@@ -1,11 +1,17 @@
 package com.absattarov.SocialNetwork.models;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(name = "group_photo_comment")
+@Table(name = "group_photo")
 public class GroupPhoto {
     @Id
     @Column(name = "id")
@@ -18,7 +24,7 @@ public class GroupPhoto {
     @Column(name = "rating")
     private int rating;
     @ManyToOne
-    @JoinColumn(name = "group",referencedColumnName = "id")
+    @JoinColumn(name = "groupp",referencedColumnName = "id")
     private Group group;
 
     @OneToMany(mappedBy = "groupPhoto")
@@ -32,6 +38,19 @@ public class GroupPhoto {
         this.createdAt = createdAt;
         this.photoPath = photoPath;
         this.rating = rating;
+    }
+
+    public String getJsonn() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                .withFieldVisibility(JsonAutoDetect.Visibility.ANY)
+                .withGetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withSetterVisibility(JsonAutoDetect.Visibility.NONE)
+                .withCreatorVisibility(JsonAutoDetect.Visibility.NONE));
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        return mapper.writeValueAsString(this);
     }
 
     public int getId() {

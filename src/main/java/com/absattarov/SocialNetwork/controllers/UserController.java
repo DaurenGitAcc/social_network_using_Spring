@@ -61,14 +61,7 @@ public class UserController {
         return "/user/news";
     }
 
-    @GetMapping("/messages")
-    public String toMessages(){
-        return "/user/messages";
-    }
-    @GetMapping("/groups")
-    public String toGroups(){
-        return "/user/groups";
-    }
+
 
 
 }

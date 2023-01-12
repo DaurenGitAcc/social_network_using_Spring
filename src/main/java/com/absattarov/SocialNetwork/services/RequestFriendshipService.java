@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,6 +35,10 @@ public class RequestFriendshipService {
         return sendersList;
     }
 
+    public Optional<RequestFriendship> findBySenderAndReceiver(User sender, User receiver){
+        return requestsFriendshipRepository.findBySenderAndReceiver(sender, receiver);
+    }
+@Transactional
     public void deleteBySenderAndReceiver(User sender, User receiver){
         requestsFriendshipRepository.deleteBySenderAndReceiver(sender, receiver);
     }
