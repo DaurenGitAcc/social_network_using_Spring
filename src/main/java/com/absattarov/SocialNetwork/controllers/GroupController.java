@@ -129,13 +129,21 @@ public class GroupController {
     }
 
     @PostMapping("/groupInfo")
-    public String saveInfo(@ModelAttribute(name = "currentGroup") Group groupWithUpdatedInfo,
-                           @RequestParam(value = "group_id", defaultValue = "") int group_id) {
+    public String saveInfo(@RequestParam(value = "description", defaultValue = "") String description,
+                           @RequestParam(value = "group_id", defaultValue = "") int group_id,
+                           @RequestParam(value = "contactId", defaultValue = "-1") int contact) {
 
         Group currentGroup = groupService.findById(group_id).get();
-        currentGroup.setDescription(groupWithUpdatedInfo.getDescription());
-        currentGroup.setCreatedAt(groupWithUpdatedInfo.getCreatedAt());
-        groupService.save(currentGroup);
+        currentGroup.setDescription(description);
+
+        if(contact>=0){
+            GroupContact groupContact = new GroupContact();            // insert in group's contacts
+            groupContact.setGroup(groupService.findById(group_id).get());
+            groupContact.setUser(userService.findById(contact).get());
+            groupContactService.save(groupContact);
+        }
+
+        groupService.update(currentGroup);
 
 
         return "redirect:/groups/" + group_id;

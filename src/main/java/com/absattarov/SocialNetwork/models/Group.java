@@ -128,6 +128,8 @@ public class Group {
         this.groupPosts = groupPosts;
     }
 
+
+
     @Override
     public int hashCode() {
         return id;

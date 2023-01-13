@@ -266,6 +266,10 @@ public class User {
         this.groupsModer = groupsModer;
     }
 
+    public String getIdString(){
+        return String.valueOf(id);
+    }
+
     @Override
     public int hashCode() {
         return this.id;

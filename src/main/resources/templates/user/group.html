@@ -403,7 +403,7 @@
 <!--Add Post Modal end-->
 
 
-<!--   Edit personal info Modal-->
+<!--   Edit group info Modal-->
 <div class="modal fade" id="editGroupInfoModal" tabindex="-1" aria-labelledby="editGroupInfoModalLabel"
      aria-hidden="true">
     <div class="modal-dialog">
@@ -413,14 +413,25 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="infoForm" th:method="POST" th:action="@{/groups/groupInfo}" th:object="${currentGroup}">
+                <form id="infoForm" th:method="POST" th:action="@{/groups/groupInfo}">
+                    <input type="hidden" name="group_id" th:value="${currentGroup.id}">
+
                     <div class="mb-3">
                         <label for="description" class="col-form-label">Статус:</label>
-                        <textarea class="form-control" id="description" th:field="*{description}"></textarea>
+                        <textarea class="form-control" id="description" name="description" th:text="${currentGroup.description}"></textarea>
                     </div>
+
                     <div class="mb-3">
-                        <label for="createdAt" class="col-form-label">Дата создания:</label>
-                        <input type="date" class="form-control" id="createdAt" th:field="*{createdAt}">
+                        <label for="contact" class="col-form-label">Назначить модератора:</label>
+                        <select class="form-select" aria-label="Default select example" id="contact" name="contactId">
+                            <option value="-1" text="Выберите" selected></option>
+
+                            <th:block th:each="subs:${subscribers}" >
+                                <option th:if="${!groupContactsId.contains(subs.id)}" th:value="${subs.id}"
+                                        th:text="${subs.getName()+' '+subs.getSurname()}"></option>
+                            </th:block>
+
+                        </select>
                     </div>
 
                 </form>
@@ -432,7 +443,7 @@
         </div>
     </div>
 </div>
-<!--Edit personla info Modal end-->
+<!--Edit group info Modal end-->
 
 <!--   Photo Modal-->
 <div class="modal fade" id="photoModal" tabindex="-1" aria-labelledby="photoModalLabel" aria-hidden="true">
