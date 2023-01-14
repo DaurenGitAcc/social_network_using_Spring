@@ -19,7 +19,12 @@
             <div class="dropdown-center ms-3">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="max-width: 28px;"
+                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle"
+                         style="vertical-align: middle;
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                          alt="Cinque Terre">
                     <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
                 </button>
@@ -66,10 +71,10 @@
                         <a class="navbar-brand" th:href="@{/user/{id}(id=${companion.id})}"><img
                                 th:src="@{${companion.avatar}}"
                                 style="vertical-align: middle;
-                                          width: 65px;
-                                          height: 65px;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
+                                  width: 65px;
+                                  height: 65px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                                 class="rounded-circle me-2" alt="..."></a>
                     </div>
                     <div class="col-9 p-0 m-0">

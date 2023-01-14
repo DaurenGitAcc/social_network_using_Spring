@@ -19,7 +19,11 @@
             <div class="dropdown-center ms-3">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="max-width: 28px;"
+                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="vertical-align: middle;
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                          alt="Cinque Terre">
                     <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
                 </button>
@@ -74,10 +78,10 @@
                         <div class="col-2 mt-1">
                             <a class="navbar-brand" th:href="@{/user/{id}(id=${person.id})}"><img
                                     src="https://via.placeholder.com/200" style="vertical-align: middle;
-                                          width: 65px;
-                                          height: 65px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle me-2"
+                                  width: 65px;
+                                  height: 65px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2"
                                     alt="..."></a>
                         </div>
                         <div class="col-9">
@@ -100,10 +104,10 @@
                     <div class="col-2 mt-1">
                         <a class="navbar-brand" th:href="@{/user/{id}(id=${friend.id})}"><img
                                 th:src="@{${friend.avatar}}" style="vertical-align: middle;
-                                          width: 65px;
-                                          height: 65px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle me-2"
+                                  width: 65px;
+                                  height: 65px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2"
                                 alt="..."></a>
                     </div>
                     <div class="col-9">

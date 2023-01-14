@@ -111,11 +111,11 @@ public class GroupController {
             groupPhoto.getGroupPhotoComments().size();
         }
 
-        // GroupPhoto groupAvatar = groupPhotoService.findByPath(currentGroup.getAvatar()).get();
+         GroupPhoto groupAvatar = groupPhotoService.findByPath(currentGroup.getAvatar()).get();
 
         model.addAttribute("authorizedUser", authorizedUser);
         model.addAttribute("currentGroup", currentGroup);
-        //model.addAttribute("groupAvatar",groupAvatar);
+        model.addAttribute("groupAvatar",groupAvatar);
         model.addAttribute("posts", currentGroup.getGroupPosts());
         model.addAttribute("photos", groupPhotos);
 
@@ -129,12 +129,14 @@ public class GroupController {
     }
 
     @PostMapping("/groupInfo")
-    public String saveInfo(@RequestParam(value = "description", defaultValue = "") String description,
+    public String saveInfo(@RequestParam(value = "name", defaultValue = "") String name,
+                           @RequestParam(value = "description", defaultValue = "") String description,
                            @RequestParam(value = "group_id", defaultValue = "") int group_id,
                            @RequestParam(value = "contactId", defaultValue = "-1") int contact) {
 
         Group currentGroup = groupService.findById(group_id).get();
         currentGroup.setDescription(description);
+        currentGroup.setName(name);
 
         if(contact>=0){
             GroupContact groupContact = new GroupContact();            // insert in group's contacts

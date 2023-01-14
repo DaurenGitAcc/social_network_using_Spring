@@ -15,7 +15,11 @@
     <div class="d-flex justify-content-end">
       <div class="dropdown-center ms-3">
         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="max-width: 28px;" alt="Cinque Terre">
+          <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="vertical-align: middle;
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" alt="Cinque Terre">
           <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
         </button>
         <ul class="dropdown-menu">
@@ -49,10 +53,10 @@
       <div class="container rounded bg-white pt-3 pb-1">
         <a th:href="@{/user/{id}(id=${companion.getId()})}" class="text-decoration-none text-dark">
         <img th:src="@{${companion.avatar}}" style="vertical-align: middle;
-                                          width: 55px;
-                                          height: 55px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle" alt="...">
+                                  width: 55px;
+                                  height: 55px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle" alt="...">
         <p class="fs-6 fw-semibold mb-0" th:text="${companion.name+' '+companion.surname}">John Hopkins</p>
         </a>
         <p class="fs-6">в сети</p>

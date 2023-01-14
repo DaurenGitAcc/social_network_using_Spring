@@ -21,10 +21,10 @@
                         aria-expanded="false">
                     <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle"
                          style="vertical-align: middle;
-                                          width: 28px;
-                                          height: 28px;;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                          alt="Cinque Terre">
                     <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
                 </button>
@@ -79,10 +79,10 @@
                             <a class="navbar-brand"  th:href="@{/groups/{id}(id=${subscription.id})}">
                                 <img th:src="@{${subscription.avatar}}"
                                      style="vertical-align: middle;
-                                          width: 65px;
-                                          height: 65px;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
+                                  width: 65px;
+                                  height: 65px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                                      class="rounded-circle me-2"
                                      alt="..."></a>
                         </div>
@@ -104,10 +104,10 @@
                             <a class="navbar-brand"  th:href="@{/groups/{id}(id=${result.id})}">
                                 <img th:src="@{${result.avatar}}"
                                      style="vertical-align: middle;
-                                          width: 65px;
-                                          height: 65px;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
+                                  width: 65px;
+                                  height: 65px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                                      class="rounded-circle me-2"
                                      alt="..."></a>
                         </div>

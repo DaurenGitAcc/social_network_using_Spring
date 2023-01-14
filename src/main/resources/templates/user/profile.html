@@ -19,7 +19,11 @@
             <div class="dropdown-center ms-3">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="max-width: 28px;"
+                    <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="vertical-align: middle;
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                          alt="Cinque Terre">
                     <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
                 </button>
@@ -72,7 +76,7 @@
                                 <img th:src="@{${currentUser.getAvatar()}}" style="vertical-align: middle;
                                   width: 200px;
                                   height: 200px;
-                                  object-fit: contain;
+                                  object-fit: cover;
                                   border-radius: 50%;" class="rounded-circle me-2" alt="..."></button>
                             <div class="text-center my-4">
                                 <button type="button" class="btn btn-light fw-semibold me-1" data-bs-toggle="modal"
@@ -167,12 +171,11 @@
                                 <div class="d-inline-flex">
                                     <img th:src="@{${post.getAuthor().getAvatar()}}"
                                          style="vertical-align: middle;
-                                          width: 40px;
-                                          height: 40px;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
-                                         class="rounded-circle me-2" alt="...">
-                                    <p class="fs-6 mt-2"
+                                  width: 40px;
+                                  height: 40px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" alt="...">
+                                    <p class="fs-6 mt-2 ms-1"
                                        th:text="${post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Name
                                         Surname</p>
                                 </div>
@@ -329,10 +332,10 @@
                     <a th:href="@{/user/{id}(id=${friend.getId()})}" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
                             <img th:src="@{${friend.getAvatar()}}" style="vertical-align: middle;
-                                          width: 45px;
-                                          height: 45px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle me-3" alt="...">
+                                  width: 45px;
+                                  height: 45px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-3" alt="...">
                             <p class="fs-6 fw-semibold my-2" th:text="${friend.getName()+' '+friend.getSurname()}">Name
                                 Surname</p>
                         </div>
@@ -360,10 +363,10 @@
                     <a th:href="@{/user/{id}(id=${subscriber.getId()})}" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
                             <img th:src="@{${subscriber.getAvatar()}}" style="vertical-align: middle;
-                                          width: 45px;
-                                          height: 45px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle me-3"
+                                  width: 45px;
+                                  height: 45px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-3"
                                  alt="...">
                             <p class="fs-6 fw-semibold my-2"
                                th:text="${subscriber.getName()+' '+subscriber.getSurname()}">Name Surname</p>
@@ -393,10 +396,10 @@
                     <a th:href="@{/group/{id}(id=${group.getId()})}" class="text-decoration-none text-dark">
                         <div class="d-inline-flex">
                             <img th:src="@{${group.getAvatar()}}" style="vertical-align: middle;
-                                          width: 45px;
-                                          height: 45px;
-                                          object-fit: contain;
-                                          border-radius: 50%;" class="rounded-circle me-3" alt="...">
+                                  width: 45px;
+                                  height: 45px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-3" alt="...">
                             <p class="fs-6 fw-semibold my-2" th:text="${group.getName()}">Group name</p>
                         </div>
                     </a>
@@ -515,7 +518,7 @@
 
                         <div class="d-inline-flex text-end">
                             <p id="published-date" class="d-inline-flex fs-6 mt-3 me-2">20.11.2022 24:33</p>
-                            <button class="btn btn-light fs-5 fw-semibold" type="button" data-bs-toggle="dropdown"
+                            <button th:if="${currentUser.id==authorizedUser.id}" class="btn btn-light fs-5 fw-semibold" type="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                 ⋮
                             </button>
@@ -698,10 +701,10 @@
                         <div class="d-inline-flex">
                             <img id="author-avatar" src="https://via.placeholder.com/200"
                                  style="vertical-align: middle;
-                                          width: 44px;
-                                          height: 44px;
-                                          object-fit: contain;
-                                          border-radius: 50%;"
+                                  width: 45px;
+                                  height: 45px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
                                  class="rounded-circle me-2" alt="...">
                             <p id="author-name" class="fs-6 mt-2">Dauren Absattarov</p>
                         </div>
@@ -771,8 +774,11 @@
                         <div id="comment_header" class="d-flex justify-content-between">
                             <a href="#" class="text-decoration-none text-dark">
                                 <div class="d-inline-flex authorDDD">
-                                    <img id="comment_author" src="https://via.placeholder.com/200" width="35px"
-                                         height="35px" class="rounded-circle me-2" alt="...">
+                                    <img id="comment_author" src="https://via.placeholder.com/200" style="vertical-align: middle;
+                                  width: 35px;
+                                  height: 35px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">
                                     <p id="comment_author_name" class="fs-6 mt-1">Dauren Absattarov</p>
                                 </div>
                             </a>
@@ -831,8 +837,11 @@
                         <div id="comment_header" class="d-flex justify-content-between">
                             <a href="#" class="text-decoration-none text-dark">
                                 <div class="d-inline-flex authorDDD">
-                                    <img id="comment_author" src="https://via.placeholder.com/200" width="35px"
-                                         height="35px" class="rounded-circle me-2" alt="...">
+                                    <img id="comment_author" src="https://via.placeholder.com/200" style="vertical-align: middle;
+                                  width: 35px;
+                                  height: 35px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">
                                     <p id="comment_author_name" class="fs-6 mt-1">Dauren Absattarov</p>
                                 </div>
                             </a>
