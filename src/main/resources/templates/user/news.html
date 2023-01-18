@@ -47,44 +47,48 @@
     <div class="col-9 ms-5 mx-auto">
       <div class="container rounded bg-white py-4">
 
-        <div th:each="groupPost:${groupPosts}" class="card mx-5 my-3" style="width: 80%;">
-          <div class="card-body">
-            <div class="d-flex justify-content-between mb-0">
-              <a href="#" class="text-decoration-none text-dark">
-                <div class="d-inline-flex">
-                  <img src="https://via.placeholder.com/200" height="40px" class="rounded-circle me-2" alt="...">
-                  <p class="fs-5 mt-1" th:text="${groupPost.getGroup().getName()}">Dauren Absattarov</p>
-                </div>
-              </a>
-              <p class="fs-6" th:text="${groupPost.getCreatedAt()}">11:43</p>
-            </div>
-            <hr class="mt-0 mb-3">
-            <a href="#" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${groupPost.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
-          </div>
-          <div class="card-footer text-start">
-            <button type="button" class="btn btn-light btn-sm">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">
-              Like <p class="m-0 d-inline-flex" th:text="${groupPost.getRating()}">777</p>
-            </button>
-            <button type="button" class="btn btn-light btn-sm fw-semibold"  data-bs-toggle="modal" data-bs-target="#postModal">
-              Comments
-            </button>
-          </div>
-        </div>
+<!--        <div th:each="groupPost:${groupPosts}" class="card mx-5 my-3" style="width: 80%;">-->
+<!--          <div class="card-body">-->
+<!--            <div class="d-flex justify-content-between mb-0">-->
+<!--              <a href="#" class="text-decoration-none text-dark">-->
+<!--                <div class="d-inline-flex">-->
+<!--                  <img src="https://via.placeholder.com/200" height="40px" class="rounded-circle me-2" alt="...">-->
+<!--                  <p class="fs-5 mt-1" th:text="${groupPost.getGroup().getName()}">Dauren Absattarov</p>-->
+<!--                </div>-->
+<!--              </a>-->
+<!--              <p class="fs-6" th:text="${groupPost.getCreatedAt()}">11:43</p>-->
+<!--            </div>-->
+<!--            <hr class="mt-0 mb-3">-->
+<!--            <a href="#" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${groupPost.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>-->
+<!--          </div>-->
+<!--          <div class="card-footer text-start">-->
+<!--            <button type="button" class="btn btn-light btn-sm">-->
+<!--              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">-->
+<!--              Like <p class="m-0 d-inline-flex" th:text="${groupPost.getRating()}">777</p>-->
+<!--            </button>-->
+<!--            <button type="button" class="btn btn-light btn-sm fw-semibold"  data-bs-toggle="modal" data-bs-target="#postModal">-->
+<!--              Comments-->
+<!--            </button>-->
+<!--          </div>-->
+<!--        </div>-->
 
         <div th:each="post:${posts}" class="card mx-5 my-3" style="width: 80%;">
           <div class="card-body">
             <div class="d-flex justify-content-between mb-0">
-              <a href="#" class="text-decoration-none text-dark">
+              <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark">
                 <div class="d-inline-flex">
-                  <img src="https://via.placeholder.com/200" height="40px" class="rounded-circle me-2" alt="...">
-                  <p class="fs-5 mt-1" th:text="${post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Dauren Absattarov</p>
+                  <img th:src="@{${post.author.name!='TestName'?post.getAuthor().getAvatar():post.getGroup().getAvatar()}}" style="vertical-align: middle;
+                                  width: 40px;
+                                  height: 40px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">
+                  <p class="fs-5 mt-1" th:text="${post.author.name=='TestName'?post.getGroup().name:post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Dauren Absattarov</p>
                 </div>
               </a>
               <p class="fs-6" th:text="${post.getCreatedAt()}">11:43</p>
             </div>
             <hr class="mt-0 mb-3">
-            <a href="#" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
+            <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
           </div>
           <div class="card-footer text-start">
             <button type="button" class="btn btn-light btn-sm">

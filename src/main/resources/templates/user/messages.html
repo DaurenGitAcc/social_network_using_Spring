@@ -66,6 +66,8 @@
         </div>
         <div class="col-7 ms-5 mx-auto">
             <div class="container rounded bg-white py-4 ps-3">
+                <p class="fs-5 text-center fw-semibold mb-5">Сообщения</p>
+
                 <div th:each="companion,iter:${companions}" class="row p-2" style="max-width: 90%;">
                     <div class="col-2 mt-1 ms-1">
                         <a class="navbar-brand" th:href="@{/user/{id}(id=${companion.id})}"><img
