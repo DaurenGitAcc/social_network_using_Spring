@@ -29,7 +29,7 @@ At the initial stages of development, a database schema and web page views were 
 
 ## Поиск друзей/Search for friends
 
-![friends](https://user-images.githubusercontent.com/114854020/215283693-475bdde6-7520-4c3b-bc16-9a515a199a1a.gif)
+![friends](https://user-images.githubusercontent.com/114854020/215283693-475bdde6-7520-4c3b-bc16-9a515a199a1a.gif){: width="50%"}
 
 ## Сообщения/Messages
 
