@@ -17,7 +17,7 @@ This is a personal pet project created using the Spring Framework with the funct
 Basic functionality:
 - Personal page
 - Blogging/publishing posts
-- Correspondence with friends
+- Messaging with friends
 - Groups and communities
 
 When creating the visual part of the project, Bootstrap 5 was used in conjunction with the Thymeleaf template engine. The authorization and authentication process is carried out using Spring Security. The project uses the PostgreSQL DBMS.
