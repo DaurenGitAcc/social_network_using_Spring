@@ -41,5 +41,7 @@ At the initial stages of development, a database schema and web page views were 
 
 ## Схема базы данных/Database scheme
 
-![SocialNetwork_DB_Scheme|50%](https://user-images.githubusercontent.com/114854020/215283789-4e1aeb73-8584-4723-83cf-60011076bfd9.png)
+![SocialNetwork_DB_Scheme](https://user-images.githubusercontent.com/114854020/215283789-4e1aeb73-8584-4723-83cf-60011076bfd9.png)
+
+img[alt=SocialNetwork_DB_Scheme] { width: 50%; }
 
