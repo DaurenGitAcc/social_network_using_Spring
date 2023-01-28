@@ -43,5 +43,3 @@ At the initial stages of development, a database schema and web page views were 
 
 ![SocialNetwork_DB_Scheme](https://user-images.githubusercontent.com/114854020/215283789-4e1aeb73-8584-4723-83cf-60011076bfd9.png)
 
-img[alt=SocialNetwork_DB_Scheme] { width: 50%; }
-
