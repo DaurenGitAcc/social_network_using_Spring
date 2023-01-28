@@ -9,6 +9,7 @@
 - Ведение блога/публикация постов
 - Переписка с друзьями
 - Группы и сообщества
+
 При создании визуальной части проекта использовался Bootstrap 5 в связке с шаблонизатором Thymeleaf. Процесс авторизации и аутентификации осуществлен с помощью Spring Security. В проекте используется СУБД PostgreSQL.
 На начальных стадиях разработки были спроектированы схема базы данных и представления веб страниц. Последующая стадия состоит из разработки и пересмотра.
 
@@ -18,6 +19,7 @@ Basic functionality:
 - Blogging/publishing posts
 - Correspondence with friends
 - Groups and communities
+
 When creating the visual part of the project, Bootstrap 5 was used in conjunction with the Thymeleaf template engine. The authorization and authentication process is carried out using Spring Security. The project uses the PostgreSQL DBMS.
 At the initial stages of development, a database schema and web page views were designed. The next stage consists of development and revision.
 
