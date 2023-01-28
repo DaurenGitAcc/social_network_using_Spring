@@ -9,19 +9,25 @@
 </head>
 <body style="background-color: #F0F1F2;">
 
-<nav class="navbar"  style="background-color: #FFFFFF;">
+<nav class="navbar" style="background-color: #FFFFFF;">
   <div class="container-fluid my-2 mx-5">
-    <a class="navbar-brand fs-3 fw-bold text-primary ms-2" th:href="@{/}">TanysPerson</a>
+    <a class="navbar-brand fs-3 fw-bold text-primary ms-2" th:text="${@environment.getProperty('app.projectName.en')}">TanysPerson</a>
     <div class="d-flex justify-content-end">
       <div class="dropdown-center ms-3">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <img src="https://via.placeholder.com/150" class="rounded-circle" style="max-width: 28px;" alt="Cinque Terre">
-          Username
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+          <img th:src="@{${authorizedUser.getAvatar()}}" class="rounded-circle" style="vertical-align: middle;
+                                  width: 28px;
+                                  height: 28px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
+               alt="Cinque Terre">
+          <span th:text="${authorizedUser.getName()+' '+authorizedUser.getSurname()}">Username</span>
         </button>
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" href="#">Profile</a></li>
           <li><a class="dropdown-item" href="#">Settings</a></li>
-          <li><a class="dropdown-item" href="#">Logout</a></li>
+          <li><a class="dropdown-item" href="/logout">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -47,64 +53,151 @@
     <div class="col-9 ms-5 mx-auto">
       <div class="container rounded bg-white py-4">
 
-<!--        <div th:each="groupPost:${groupPosts}" class="card mx-5 my-3" style="width: 80%;">-->
+<!--        <div th:each="post:${posts}" class="card mx-5 my-3" style="width: 80%;">-->
 <!--          <div class="card-body">-->
 <!--            <div class="d-flex justify-content-between mb-0">-->
-<!--              <a href="#" class="text-decoration-none text-dark">-->
+<!--              <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark">-->
 <!--                <div class="d-inline-flex">-->
-<!--                  <img src="https://via.placeholder.com/200" height="40px" class="rounded-circle me-2" alt="...">-->
-<!--                  <p class="fs-5 mt-1" th:text="${groupPost.getGroup().getName()}">Dauren Absattarov</p>-->
+<!--                  <img th:src="@{${post.author.name!='TestName'?post.getAuthor().getAvatar():post.getGroup().getAvatar()}}" style="vertical-align: middle;-->
+<!--                                  width: 40px;-->
+<!--                                  height: 40px;-->
+<!--                                  object-fit: cover;-->
+<!--                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">-->
+<!--                  <p class="fs-5 mt-1" th:text="${post.author.name=='TestName'?post.getGroup().name:post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Dauren Absattarov</p>-->
 <!--                </div>-->
 <!--              </a>-->
-<!--              <p class="fs-6" th:text="${groupPost.getCreatedAt()}">11:43</p>-->
+<!--              <p class="fs-6" th:text="${post.getCreatedAt().year+' '+post.getCreatedAt().month+' '+post.getCreatedAt().dayOfMonth+' '+post.getCreatedAt().hour+':'+post.getCreatedAt().minute}">11:43</p>-->
+<!--&lt;!&ndash;            postDTO localdatetime to formatted string and in controller do formatting&ndash;&gt;-->
 <!--            </div>-->
 <!--            <hr class="mt-0 mb-3">-->
-<!--            <a href="#" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${groupPost.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>-->
+<!--            <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>-->
 <!--          </div>-->
 <!--          <div class="card-footer text-start">-->
 <!--            <button type="button" class="btn btn-light btn-sm">-->
 <!--              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">-->
-<!--              Like <p class="m-0 d-inline-flex" th:text="${groupPost.getRating()}">777</p>-->
+<!--              Like <p class="m-0 d-inline-flex" th:text="${post.getRating()}">777</p>-->
 <!--            </button>-->
-<!--            <button type="button" class="btn btn-light btn-sm fw-semibold"  data-bs-toggle="modal" data-bs-target="#postModal">-->
+<!--            <button type="button" class="btn btn-light btn-sm fw-semibold">-->
 <!--              Comments-->
 <!--            </button>-->
 <!--          </div>-->
 <!--        </div>-->
 
+
+        <!---->
+        <p class="fs-4 fw-semibold  ">Новости</p>
         <div th:each="post:${posts}" class="card mx-5 my-3" style="width: 80%;">
           <div class="card-body">
-            <div class="d-flex justify-content-between mb-0">
+
+            <div id="header" class="d-flex justify-content-between mb-0">
               <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark">
                 <div class="d-inline-flex">
-                  <img th:src="@{${post.author.name!='TestName'?post.getAuthor().getAvatar():post.getGroup().getAvatar()}}" style="vertical-align: middle;
+                  <img th:src="@{${post.author.name!='TestName'?post.getAuthor().getAvatar():post.getGroup().getAvatar()}}"
+                       style="vertical-align: middle;
                                   width: 40px;
                                   height: 40px;
                                   object-fit: cover;
-                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">
-                  <p class="fs-5 mt-1" th:text="${post.author.name=='TestName'?post.getGroup().name:post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Dauren Absattarov</p>
+                                  border-radius: 50%;" alt="...">
+                  <p class="fs-6 mt-2 ms-1"
+                     th:text="${post.author.name=='TestName'?post.getGroup().name:post.getAuthor().getName()+' '+post.getAuthor().getSurname()}">Name
+                    Surname</p>
                 </div>
               </a>
-              <p class="fs-6" th:text="${post.getCreatedAt()}">11:43</p>
+              <div th:onmouseover="mouseOver(this,[[${post.author.name!='TestName'?post.getAuthor().id==authorizedUser.id:post.getGroupContactsId().contains(authorizedUser.id)}]])"
+                   th:onmouseout="mouseOut(this,[[${post.author.name!='TestName'?post.getAuthor().id==authorizedUser.id:post.getGroupContactsId().contains(authorizedUser.id)}]])"
+                   class="d-flex align-center">
+                <p id="created_at" class="fs-6 mt-1"
+                   th:text="${post.getCreatedAt().getHour()+(post.getCreatedAt().getMinute()<10?':0':':')+ post.getCreatedAt().getMinute()}">
+                  11:43</p>
+                <div class="d-inline-flex text-end">
+
+                  <div id="settings" class="dropdown" style="display: none">
+                    <button class="btn btn-light fs-5 fw-semibold" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                      ⋮
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <button class="dropdown-item" type="button" data-bs-toggle="modal"
+                                data-bs-target="#editPostByAuthorModal"
+                                th:data-bs-whatever="${post.getJsonn()}">Редактировать
+                        </button>
+                      </li>
+                      <li>
+                        <button class="dropdown-item" th:form="${'deletePost'+post.getId()}"
+                                type="submit">Удалить
+                        </button>
+                      </li>
+                      <form th:id="${'deletePost'+post.getId()}" th:method="POST"
+                            th:action="@{/profile/delete-post}">
+                        <input type="hidden" name="post_id" th:value="${post.getId()}">
+                      </form>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
             </div>
             <hr class="mt-0 mb-3">
-            <a th:href="@{${post.author.name!='TestName'?'/user/'+post.getAuthor().id:'/groups/'+post.getGroup().id}}" class="text-decoration-none text-dark"  data-bs-toggle="modal" data-bs-target="#postModal"><p class="card-text text-start fs-5" th:text="${post.getPost()}">With supporting text below as a natural lead-in to additional content.</p></a>
+            <a href="#" class="text-decoration-none text-dark" data-bs-toggle="modal"
+               data-bs-target="#postModal" onclick="myFunction(this)"
+               th:data-bs-whatever="${post.getJsonn()}"><p class="card-text text-start fs-6"
+                                                           th:text="${post.getPost()}">With supporting text
+              below as a natural lead-in to additional content.</p></a>
           </div>
           <div class="card-footer text-start">
-            <button type="button" class="btn btn-light btn-sm">
-              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">
+            <button type="submit" class="btn btn-light btn-sm" form="post-like-form">
+              <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU"
+                   class="rounded-circle" style="max-width: 20px;" alt="Cinque Terre">
               Like <p class="m-0 d-inline-flex" th:text="${post.getRating()}">777</p>
             </button>
-            <button type="button" class="btn btn-light btn-sm fw-semibold">
+            <form id="post-like-form" method="post" action="/profile/like-post" style="display: none;">
+              <input type="hidden" name="post_id" th:value="${post.id}">
+            </form>
+            <button type="button" class="btn btn-light btn-sm fw-semibold" data-bs-toggle="modal"
+                    data-bs-target="#postModal" th:data-bs-whatever="${post.getJsonn()}">
               Comments
             </button>
           </div>
         </div>
+        <!---->
       </div>
 
     </div>
   </div>
 </div>
+
+
+<script>
+
+  function mouseOver(divv, bool) {
+    if (typeof (bool) === "number") {
+      let author_id = divv.querySelector('#comment_author_id').value;
+      bool = bool == author_id;
+    }
+
+    if (bool) {
+      divv.querySelector('#created_at').style.display = "none";
+      divv.querySelector('#settings').style.display = "inline";
+    }
+
+  }
+
+  function mouseOut(divv, bool) {
+    if (typeof (bool) === "number") {
+      const author_id = divv.querySelector('#comment_author_id').value;
+      bool = bool == author_id;
+    }
+
+    if (bool) {
+      divv.querySelector('#settings').style.display = "none";
+      divv.querySelector('#created_at').style.display = "inline";
+    }
+
+  }
+
+</script>
+
 
 <!-- Post Modal-->
 <div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
@@ -112,23 +205,31 @@
     <div class="modal-content">
       <div class="modal-header pb-2">
         <h1 class="modal-title fs-5" id="postModalLabel">
-          <a href="#" class="text-decoration-none text-dark">
+          <a id="author-href" href="#" class="text-decoration-none text-dark">
             <div class="d-inline-flex">
-              <img src="https://via.placeholder.com/200" height="44px" class="rounded-circle me-2" alt="...">
-              <p class="fs-6 mt-2">Dauren Absattarov</p>
+              <img id="author-avatar" src="https://via.placeholder.com/200"
+                   style="vertical-align: middle;
+                                  width: 45px;
+                                  height: 45px;
+                                  object-fit: cover;
+                                  border-radius: 50%;"
+                   class="rounded-circle me-2" alt="...">
+              <p id="author-name" class="fs-6 mt-2">Dauren Absattarov</p>
             </div>
           </a>
         </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body px-4" style="min-height: 100px">
-        <p class="card-text text-start fs-6">With supporting text below as a natural lead-in to additional content.</p>
+        <p id="post-text" class="card-text text-start fs-6">With supporting text below as a natural lead-in to
+          additional content.</p>
       </div>
       <div class="modal-footer">
         <div class="container text-start">
           <button type="button" class="btn btn-light btn-sm fs-6">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU" class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
-            Like <p class="m-0 d-inline-flex">777</p>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS52tbpQ8Q8MX5ZkTaHbzV2h2-NInPjmfxTpw&usqp=CAU"
+                 class="rounded-circle" style="max-width: 24px;" alt="Cinque Terre">
+            Like <p id="like" class="m-0 d-inline-flex">777</p>
           </button>
           <button type="button" class="btn btn-light btn-sm fw-bold fs-6" disabled>
             Comments
@@ -138,37 +239,27 @@
         <div class="container m-0 p-0">
           <hr class="my-3">
         </div>
-        <div class="container mb-3 mt-4" >
+        <div class="container mb-3 mt-4">
           <div class="row justify-content-center">
             <div class="col-9">
-              <div class="card">
-                <div class="card-body d-flex">
-                  <input class="form-control me-2" type="text">
-                  <button class="btn btn-outline-primary" type="submit">Написать</button>
-
+              <form th:method="POST" th:action="@{/profile/add-post-comment}">
+                <div class="card">
+                  <div class="card-body d-flex">
+                    <input type="hidden" name="user_id" id="user_id"
+                           th:value="${authorizedUser.getId()}">
+                    <input type="hidden" name="post_id" id="post_id">
+                    <input name="comment" class="form-control me-2" type="text">
+                    <button class="btn btn-outline-primary" type="submit">Написать</button>
+                  </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
         <div class="container mt-2 mb-4 overflow-auto" style="max-height: 500px;">
           <div class="row justify-content-center">
-            <div class="col-9">
-              <p class="fs-5 text-start">1 комментарии:</p>
-              <div class="card mt-2">
-                <div class="card-body">
-                  <div class="d-flex justify-content-between">
-                    <div class="d-inline-flex">
-                      <img src="https://via.placeholder.com/200" width="35px" height="35px" class="rounded-circle me-2" alt="...">
-                      <p class="fs-6 mt-1">Dauren Absattarov</p>
-                    </div>
-                    <p class="fs-6">11:43</p>
-                  </div>
-                  <p class="card-text text-start" style="width: 90%;
-                                                                                   hyphens: auto">Очень хороши пост.</p>
+            <div id="comment-storage" class="col-9">
 
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -178,6 +269,189 @@
 </div>
 <!--Post Modal end-->
 
+<!-- Post Modal-->
+<div class="modal fade" id="templateComment" tabindex="-1" aria-labelledby="templateCommentLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-footer">
+        <p id="commentary_count" class="fs-5 text-start">1 комментарии:</p>
+
+
+        <div id="comment-frame" class="card mt-2">
+          <div id="toEditCommentForm" data-attr="parent" class="card-body">
+            <div id="comment_header" class="d-flex justify-content-between">
+              <a href="#" class="text-decoration-none text-dark">
+                <div class="d-inline-flex authorDDD">
+                  <img id="comment_author" src="https://via.placeholder.com/200" style="vertical-align: middle;
+                                  width: 35px;
+                                  height: 35px;
+                                  object-fit: cover;
+                                  border-radius: 50%;" class="rounded-circle me-2" alt="...">
+                  <p id="comment_author_name" class="fs-6 mt-1">Dauren Absattarov</p>
+                </div>
+              </a>
+              <div th:onmouseover="mouseOver(this,[[${authorizedUser.getId()}]])"
+                   th:onmouseout="mouseOut(this,[[${authorizedUser.getId()}]])"
+                   class="d-flex align-center">
+                <input type="hidden" id="comment_author_id">
+                <input type="hidden" id="comment_id">
+                <p id="created_at" class="fs-6">11:43</p>
+                <div class="d-inline-flex text-end">
+                  <div id="settings" class="dropup-center dropup" style="display: none">
+                    <button class="btn btn-light fs-6 fw-semibold" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                      ⋮
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-lg-end">
+                      <li>
+                        <button class="dropdown-item"
+                                onclick="displayEditCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)"
+                                type="button">Редактировать
+                        </button>
+                      </li>
+                      <li>
+                        <button class="dropdown-item"
+                                onclick="deleteCommentForm(this.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode)"
+                                type="button">Удалить
+                        </button>
+                      </li>
+                      <form id="deleteCommentForm" method="post"
+                            action="/profile/delete-post-comment">
+                        <input type="hidden" id="delete-form-comment-id" name="comment_id">
+                      </form>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <p id="post_comment" class="card-text text-start" style="width: 90%;
+                                                                                   hyphens: auto">Очень хороши пост.</p>
+          </div>
+        </div>
+        <form id="commentEditForm" th:method="POST" th:action="@{/profile/edit-post-comment}">
+          <input type="hidden" id="comment_id" name="comment_id">
+          <textarea class="form-control" name="comment" id="comment"></textarea>
+          <div class="text-end">
+            <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" type="submit">Отмена
+            </button>
+            <button class="btn btn-light btn-sm mt-2 fw-semibold align-self-end" form="commentEditForm"
+                    type="submit">Редактировать
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!--Post Modal end-->
+
+
+<script>
+
+
+
+  function myFunction(button) {
+
+    const commentCount = document.querySelector('#commentary_count');
+
+    document.querySelector('#comment-storage').innerHTML = "";
+
+    const post_obj = JSON.parse(button.getAttribute('data-bs-whatever'));
+    let commentLength;
+    let postCommentsExtracted;
+    if(post_obj.author.name==="TestName"){
+      commentLength = post_obj.groupPostComments.length
+      postCommentsExtracted = post_obj.groupPostComments
+    }
+    else {
+      commentLength = post_obj.postComments.length
+      postCommentsExtracted = post_obj.postComments
+    }
+
+    commentCount.innerText = commentLength + " комментарии:";
+
+    document.querySelector('#comment-storage').appendChild(commentCount);
+
+    for (let i = 0; i < commentLength; i++) {
+      const commentFrame = document.getElementById("comment-frame").cloneNode(true);
+
+
+      const options = {weekday: 'long', hour: '2-digit', minute: '2-digit'};
+
+
+      const eventt = new Date(postCommentsExtracted[i].createdAt);
+
+
+      const authorAvatar = commentFrame.querySelector('#comment_author');
+      const authorName = commentFrame.querySelector('#comment_author_name');
+      const createdAt = commentFrame.querySelector('#created_at');
+      const postComment = commentFrame.querySelector('#post_comment');
+      const authorId = commentFrame.querySelector('#comment_author_id');
+      const comId = commentFrame.querySelector('#comment_id');
+      //const commentCount = commentFrame.querySelector('#commentary_count');
+
+      authorAvatar.src = postCommentsExtracted[i].author.avatar;
+      authorName.innerText = postCommentsExtracted[i].author.name + " " + postCommentsExtracted[i].author.surname;
+      createdAt.innerText = eventt.toLocaleDateString(undefined, options);
+      postComment.innerText = postCommentsExtracted[i].comment;
+      authorId.value = postCommentsExtracted[i].author.id;
+      comId.value = postCommentsExtracted[i].id;
+      //commentCount.innerText=post_obj.postComments.size;
+
+      document.querySelector('#comment-storage').appendChild(commentFrame);
+    }
+
+  }
+
+
+  const exampleModal = document.getElementById('postModal')
+  exampleModal.addEventListener('show.bs.modal', event => {
+
+    const button = event.relatedTarget
+
+    const post_obj = JSON.parse(button.getAttribute('data-bs-whatever'))
+
+    const authorAvatar = exampleModal.querySelector('.modal-header img[id=author-avatar]')
+    const authorName = exampleModal.querySelector('.modal-header p[id=author-name]')
+    const authorPageLink = exampleModal.querySelector('.modal-header a[id=author-href]')
+
+    const postText = exampleModal.querySelector('.modal-body p[id=post-text]')
+    const like = exampleModal.querySelector('.modal-footer p[id=like]')
+    const postId = exampleModal.querySelector('.modal-footer input[id=post_id]')
+    const commentaryCount = exampleModal.querySelector('.modal-footer input[id=commentary_count]')
+
+    let hrefAuthor;
+    let authorObj;
+    let authorNameExtracted;
+    let commentLength;
+    if(post_obj.author.name==="TestName"){
+      authorObj = post_obj.group;
+      authorNameExtracted = post_obj.group.name;
+      hrefAuthor = "/groups/"+post_obj.group.id;
+      commentLength = post_obj.groupPostComments.length
+    }
+    else {
+      authorObj = post_obj.author;
+      authorNameExtracted = post_obj.author.name + " " + post_obj.author.surname;
+      hrefAuthor = "/user/"+post_obj.author.id;
+      commentLength = post_obj.postComments.length
+
+    }
+
+    authorAvatar.src = authorObj.avatar;
+    authorName.innerText = authorNameExtracted;
+    authorPageLink.href = hrefAuthor;
+
+    postText.innerText = post_obj.post;
+    like.innerText = post_obj.rating;
+    postId.value = post_obj.id;
+    commentaryCount.innerText = commentLength;
+
+
+  })
+</script>
 
 
 

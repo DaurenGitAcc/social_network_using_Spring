@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class UserPostDTO extends PostDTO{
 
@@ -21,6 +22,7 @@ public class UserPostDTO extends PostDTO{
     private String post;
 
     private int rating;
+
 
     private User author;
 

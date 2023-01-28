@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class GroupPostDTO extends PostDTO{
 
@@ -25,6 +26,8 @@ public class GroupPostDTO extends PostDTO{
     private Group group;
 
     private List<GroupPostComment> groupPostComments;
+
+    private Set<Integer> groupContactsId;
 
     public GroupPostDTO() {
     }
@@ -48,6 +51,16 @@ public class GroupPostDTO extends PostDTO{
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         return mapper.writeValueAsString(this);
+    }
+
+    @Override
+    public Set<Integer> getGroupContactsId() {
+        return groupContactsId;
+    }
+
+    @Override
+    public void setGroupContactsId(Set<Integer> groupContactsId) {
+        this.groupContactsId = groupContactsId;
     }
 
     public int getId() {

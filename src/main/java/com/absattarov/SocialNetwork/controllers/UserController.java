@@ -9,6 +9,7 @@ import com.absattarov.SocialNetwork.models.Post;
 import com.absattarov.SocialNetwork.models.User;
 import com.absattarov.SocialNetwork.security.UserDetails;
 import com.absattarov.SocialNetwork.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,10 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/")
@@ -52,7 +50,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_MODER','ROLE_ADMIN')")
     @GetMapping("/")
     @Transactional(readOnly = true)
-    public String newsPage(Model model){
+    public String newsPage(Model model) throws JsonProcessingException {
         User currentUser = getCurrentUser();
         List<GroupPost> groupPosts = new ArrayList<>();
         List<Post> posts = new ArrayList<>();
@@ -79,6 +77,14 @@ public class UserController {
             groupPostsDTO.add(GroupPostToGroupPostDTO(post));
         }
 
+        for (GroupPostDTO post: groupPostsDTO) {             // set int postDTO groupContactsId
+            Set<Integer> groupContactsId=new HashSet<>();
+            for (User contact: post.getGroup().getContacts()) {
+                groupContactsId.add(contact.getId());
+            }
+            post.setGroupContactsId(groupContactsId);
+        }
+
         List<PostDTO> postss = new ArrayList<>();
         postss.addAll(userPostsDTO);
         postss.addAll(groupPostsDTO);
@@ -89,8 +95,12 @@ public class UserController {
             }
         });
 
-
+        for (PostDTO post:postss
+             ) {
+            System.out.println(post.getJsonn());
+        }
         model.addAttribute("posts",postss);
+        model.addAttribute("authorizedUser",getCurrentUser());
 
         return "/user/news";
     }

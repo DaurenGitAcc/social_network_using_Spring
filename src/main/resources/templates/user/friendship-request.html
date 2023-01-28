@@ -11,7 +11,7 @@
 
 <nav class="navbar"  style="background-color: #FFFFFF;">
     <div class="container-fluid my-2 mx-5">
-        <a class="navbar-brand fs-3 fw-bold text-primary ms-2">TanysPerson</a>
+        <a class="navbar-brand fs-3 fw-bold text-primary ms-2" th:text="${@environment.getProperty('app.projectName.en')}">TanysPerson</a>
         <div class="d-flex justify-content-end">
             <div class="dropdown-center ms-3">
                 <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
