@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Personal Page</title>
+    <title>Группа</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
@@ -122,23 +122,22 @@
                                th:text="${'Дата создания: '+currentGroup.getCreatedAt()}">Дата создания: 9 ноября
                                 2000</p>
 
-                            <div class="overflow-auto h-auto" style="width: 90%;background-color: #f3f3f3;overflow: auto;
+                            <div class="overflow-auto h-auto" style="height:65px;width: 90%;background-color: #f3f3f3;overflow: auto;
                                                                              white-space: nowrap;">
                                 <button th:if="${groupContactsId.contains(authorizedUser.id)}" type="button"
                                         class="btn m-0 p-0" style="" onclick="imageInput()">
                                     <img src="/./img/plus_edited.png" class="img-fluid d-inline-flex"
-                                         style="width: 4.5rem;" alt="..."></button>
+                                         style="width: 60px;height: auto" alt="..."></button>
 
                                 <button th:each="photo:${photos}" type="button" class="btn m-0 p-0" style=""
                                         onclick="myFunction2(this)" data-bs-toggle="modal" data-bs-target="#photoModal"
                                         th:data-bs-whatever="${photo.getJsonn()}">
                                     <img th:src="@{${photo.photoPath}}" class="img-fluid d-inline-flex"
-                                         style="width: 5.5rem;" alt="..."></button>
+                                         style="max-height: 65px;width: auto" alt="..."></button>
 
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <hr>
                 <button th:if="${groupContactsId.contains(authorizedUser.id)}" type="button"

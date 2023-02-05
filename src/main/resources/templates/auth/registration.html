@@ -11,11 +11,11 @@
 
 <nav class="navbar"  style="background-color: #FFFFFF;">
     <div class="container-fluid my-2 mx-3">
-        <a class="navbar-brand fs-3 fw-bold text-primary">TanysPerson</a>
+        <a class="navbar-brand fs-3 fw-bold text-primary" th:text="${@environment.getProperty('app.projectName.en')}">TanysPerson</a>
 
         <div class="d-flex justify-content-end">
-            <a class="btn btn-outline-success me-3" href="login.html" role="button">Login</a>
-            <a class="btn btn-outline-secondary" href="registration.html" role="button">Registration</a>
+            <a class="btn btn-outline-success me-3" href="login.html" role="button">Логин</a>
+            <a class="btn btn-outline-secondary" href="registration.html" role="button">Регистрация</a>
         </div>
     </div>
 </nav>
@@ -24,27 +24,28 @@
     <div class="row">
         <div class="d-flex justify-content-center">
             <form th:method="POST" th:action="@{/auth/registration}" class="col-md-3 mt-5" th:object="${user}">
+                <p class="fs-4 fw-semibold mb-4 text-center">Регистрация</p>
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name:</label>
+                    <label for="name" class="form-label">Имя:</label>
                     <input type="text" class="form-control" id="name" th:field="*{name}" aria-describedby="emailHelp">
                 </div>
 
                 <div class="mb-4">
-                    <label for="surname" class="form-label">Surname:</label>
+                    <label for="surname" class="form-label">Фимилия:</label>
                     <input type="text" class="form-control" id="surname" th:field="*{surname}">
                 </div>
                 <div class="mb-4">
-                    <label for="phoneNumber" class="form-label">Phone Number:</label>
+                    <label for="phoneNumber" class="form-label">Номер телефона:</label>
                     <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
                     <div style="color: red" th:if="${#fields.hasAnyErrors()!=null}" th:errors="*{phoneNumber}">Ошибка. Такой номер уже зарегистрирован!</div>
                     <br/>
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="form-label">Password:</label>
+                    <label for="password" class="form-label">Пароль:</label>
                     <input type="password" class="form-control" id="password" th:field="*{password}">
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Registration</button></div>
+                    <button type="submit" class="btn btn-primary">Зарегистрироваться</button></div>
             </form>
         </div>
     </div>

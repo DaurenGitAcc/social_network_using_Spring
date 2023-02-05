@@ -11,11 +11,11 @@
 
 <nav class="navbar"  style="background-color: #FFFFFF;">
     <div class="container-fluid my-2 mx-3">
-        <a class="navbar-brand fs-3 fw-bold text-primary">TanysPerson</a>
+        <a class="navbar-brand fs-3 fw-bold text-primary" th:text="${@environment.getProperty('app.projectName.en')}">TanysPerson</a>
 
         <div class="d-flex justify-content-end">
-            <a class="btn btn-outline-success me-3" th:href="@{/auth/login}" role="button">Login</a>
-            <a class="btn btn-outline-secondary" th:href="@{/auth/registration}" role="button">Registration</a>
+            <a class="btn btn-outline-success me-3" th:href="@{/auth/login}" role="button">Логин</a>
+            <a class="btn btn-outline-secondary" th:href="@{/auth/registration}" role="button">Регистрация</a>
         </div>
     </div>
 </nav>
@@ -24,17 +24,18 @@
     <div class="row">
         <div class="d-flex justify-content-center">
             <form method="post" action="/process_login" class="col-md-3 mt-5">
+                <p class="fs-4 fw-semibold mb-4 text-center">Вход</p>
                 <div class="mb-3">
-                    <label for="username" class="form-label">Phone Number:</label>
+                    <label for="username" class="form-label">Номер телефона:</label>
                     <input type="text" name="username" class="form-control" id="username">
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="form-label">Password:</label>
+                    <label for="password" class="form-label">Пароль:</label>
                     <input type="password" class="form-control" name="password" id="password">
                 </div>
                 <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Login</button></div>
+                    <button type="submit" class="btn btn-primary">Логин</button></div>
             </form>
         </div>
     </div>
