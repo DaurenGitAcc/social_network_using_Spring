@@ -25,15 +25,15 @@ public class Group {
     @ManyToMany
     @JoinTable(
             name = "group_contact",
-            joinColumns = @JoinColumn(name = "groupp"),
-            inverseJoinColumns = @JoinColumn(name = "userr"))
+            joinColumns = @JoinColumn(name = "groups"),
+            inverseJoinColumns = @JoinColumn(name = "users"))
     @JsonIgnore
     private List<User> contacts;
 
     @ManyToMany
     @JoinTable(
             name = "subscription_group",
-            joinColumns = @JoinColumn(name = "group_id"),
+            joinColumns = @JoinColumn(name = "groups"),
             inverseJoinColumns = @JoinColumn(name = "subscriber"))
     @JsonIgnore
     private List<User> members;

@@ -58,14 +58,14 @@ public class User {
     @ManyToMany
     @JoinTable(
         name = "friends",
-        joinColumns = @JoinColumn(name = "userr"),
+        joinColumns = @JoinColumn(name = "users"),
         inverseJoinColumns = @JoinColumn(name = "friend"))
     @JsonIgnore
     private List<User> friends;
     @ManyToMany
     @JoinTable(
             name = "subscriber",
-            joinColumns = @JoinColumn(name = "userr"),
+            joinColumns = @JoinColumn(name = "users"),
             inverseJoinColumns = @JoinColumn(name = "subscriber"))
     @JsonIgnore
     private List<User> subscribers;

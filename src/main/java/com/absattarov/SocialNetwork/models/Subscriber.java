@@ -10,7 +10,7 @@ public class Subscriber {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "userr",referencedColumnName = "id")
+    @JoinColumn(name = "users",referencedColumnName = "id")
     private User user;
     @ManyToOne
     @JoinColumn(name = "subscriber",referencedColumnName = "id")

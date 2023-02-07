@@ -11,10 +11,10 @@ public class GroupContact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "userr",referencedColumnName = "id")
+    @JoinColumn(name = "users",referencedColumnName = "id")
     private User user;
     @ManyToOne
-    @JoinColumn(name = "groupp",referencedColumnName = "id")
+    @JoinColumn(name = "groups",referencedColumnName = "id")
     private Group group;
 
     public GroupContact() {

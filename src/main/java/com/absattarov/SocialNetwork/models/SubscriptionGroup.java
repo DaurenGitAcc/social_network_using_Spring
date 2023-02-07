@@ -10,7 +10,7 @@ public class SubscriptionGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "group_id",referencedColumnName = "id")
+    @JoinColumn(name = "groups",referencedColumnName = "id")
     private Group group;
     @ManyToOne
     @JoinColumn(name = "subscriber",referencedColumnName = "id")

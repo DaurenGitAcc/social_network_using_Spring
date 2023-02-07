@@ -24,7 +24,7 @@ public class GroupPost {
     @Column(name = "rating")
     private int rating;
     @ManyToOne
-    @JoinColumn(name = "groupp",referencedColumnName = "id")
+    @JoinColumn(name = "groups",referencedColumnName = "id")
     private Group group;
     @OneToMany(mappedBy = "groupPost")
     private List<GroupPostComment> groupPostComments;
