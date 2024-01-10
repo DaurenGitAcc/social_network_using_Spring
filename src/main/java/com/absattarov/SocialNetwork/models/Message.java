@@ -14,10 +14,10 @@ public class Message {
     private LocalDateTime createdAt;
     @Column(name = "message")
     private String message;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "sender",referencedColumnName = "id")
     private User sender;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "receiver",referencedColumnName = "id")
     private User receiver;
 

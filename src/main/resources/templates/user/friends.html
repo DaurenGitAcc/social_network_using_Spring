@@ -41,22 +41,20 @@
     <div class="row justify-content-between">
         <div class="col-2">
             <div class="list-group text-start">
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toPersonalPage">My
-                    Profile
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toPersonalPage">Моя страница
                 </button>
-                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toNewsPage">News
-                    Page
+                <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toNewsPage">Новости
                 </button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toMessagesPage">
-                    Messages
+                    Сообщения
                 </button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold" form="toGroupsPage">
-                    Groups
+                    Группы
                 </button>
                 <button type="submit" class="list-group-item list-group-item-action fw-semibold text-primary">
-                    Friends
+                    Друзья
                 </button>
-                <button type="button" class="list-group-item list-group-item-action fw-semibold">Games</button>
+                <button type="button" class="list-group-item list-group-item-action fw-semibold">Игры</button>
                 <form id="toPersonalPage" th:action="@{/profile}" method="get"></form>
                 <form id="toNewsPage" th:action="@{/}" method="get"></form>
                 <form id="toMessagesPage" th:action="@{/messages}" method="get"></form>

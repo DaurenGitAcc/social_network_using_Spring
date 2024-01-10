@@ -31,10 +31,10 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="surname" class="form-label">Фимилия:</label>
+                    <label for="surname" class="form-label">Фамилия:</label>
                     <input type="text" class="form-control" id="surname" th:field="*{surname}">
                 </div>
-                <div class="mb-4">
+                <div class="mb-2">
                     <label for="phoneNumber" class="form-label">Номер телефона:</label>
                     <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
                     <div style="color: red" th:if="${#fields.hasAnyErrors()!=null}" th:errors="*{phoneNumber}">Ошибка. Такой номер уже зарегистрирован!</div>
